@@ -4,7 +4,13 @@ import Welcome from "../pages/welcome/Welcome";
 import Login from "../pages/login/Login";
 import Register from "../pages/register/Register";
 import OTPVerification from "../pages/otp/OTPVerification";
-import DashboardLayoutComponent from "../pages/dashboard/dashboardlayoutcomponent";
+
+
+// Layout
+import DashboardLayout from "../layouts/DashboardLayout";
+
+// Dashboard Pages
+import Dashboard from "../pages/dashboard/Dashboard";
 
 
 export default function AppRoutes() {
@@ -15,8 +21,10 @@ export default function AppRoutes() {
       <Route path="/register" element={<Register />} />
       <Route path="/otp-verification" element={<OTPVerification />} />
 
-      <Route path="/dashboard" element={<DashboardLayoutComponent />}></Route>
-      {/* <Route path="/dashboardscreen" element={<Dashboard />} /> */}
+       {/* Dashboard Layout */}
+      <Route path="/dashboard" element={<DashboardLayout />}>
+        <Route index element={<Dashboard />} />
+      </Route>
 
     </Routes>
   );
