@@ -13,6 +13,10 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import Dashboard from "../pages/dashboard/Dashboard";
 
 
+//To prevent the user from accessing the pages ,if the user not logged in
+import ProtectedRoute from "./ProtectedRoute";
+
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -21,8 +25,12 @@ export default function AppRoutes() {
       <Route path="/register" element={<Register />} />
       <Route path="/otp-verification" element={<OTPVerification />} />
 
-       {/* Dashboard Layout */}
-      <Route path="/dashboard" element={<DashboardLayout />}>
+      {/* Dashboard Layout */}
+      <Route path="/dashboard" element={
+        <ProtectedRoute>
+          <DashboardLayout />
+        </ProtectedRoute>
+      }>
         <Route index element={<Dashboard />} />
       </Route>
 

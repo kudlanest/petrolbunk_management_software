@@ -9,6 +9,8 @@ import {
   InputAdornment,
   IconButton,
   CircularProgress,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 import {
@@ -20,7 +22,7 @@ import {
 
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../services/api";
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -36,6 +38,29 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
 
   const [errors, setErrors] = useState({});
+
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+
+  //---------------------------------------
+
+  const showSnackbar = (message, severity = "success") => {
+    setSnackbar({
+      open: true,
+      message,
+      severity,
+    });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar((prev) => ({
+      ...prev,
+      open: false,
+    }));
+  };
 
   //---------------------------------------
 
@@ -68,39 +93,37 @@ export default function LoginForm() {
 
   //---------------------------------------
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!validate()) return;
 
-    setLoading(true);
-    // Call backend to validate credentials and send OTP
-    axios
-      .post("/api/auth/login", {
+    try {
+      setLoading(true);
+
+      const response = await api.post("/auth/login", {
         username: form.username,
         password: form.password,
-      })
-      .then((res) => {
-        setLoading(false);
-
-        const data = res.data || {};
-
-        // Expect backend to return a tempToken to be used for OTP verification
-        if (data.tempToken) {
-          navigate("/otp-verification", {
-            state: { from: "login", tempToken: data.tempToken, next: "/dashboard" },
-          });
-        } else {
-          // Fallback: navigate to OTP page with a dummy token
-          navigate("/otp-verification", {
-            state: { from: "login", tempToken: "temp-token-fallback", next: "/dashboard" },
-          });
-        }
-      })
-      .catch((err) => {
-        setLoading(false);
-        // show error (backend returned invalid credentials)
-        const message = err?.response?.data?.message || "Login failed. Check credentials.";
-        alert(message);
       });
+
+      const data = response.data;
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data));
+
+      showSnackbar("Login Successful", "success");
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1000);
+
+    } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        "Invalid username or password";
+
+      showSnackbar(message, "error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   //---------------------------------------
@@ -133,18 +156,13 @@ export default function LoginForm() {
             ),
           }}
           sx={{
-            input: {
-              color: "white",
-            },
-
+            input: { color: "white" },
             "& .MuiOutlinedInput-root": {
               borderRadius: "14px",
             },
-
             "& fieldset": {
               borderColor: "rgba(255,255,255,.2)",
             },
-
             "&:hover fieldset": {
               borderColor: "#38BDF8",
             },
@@ -176,7 +194,6 @@ export default function LoginForm() {
                 <Lock sx={{ color: "#38BDF8" }} />
               </InputAdornment>
             ),
-
             endAdornment: (
               <InputAdornment position="end">
                 <IconButton
@@ -194,18 +211,13 @@ export default function LoginForm() {
             ),
           }}
           sx={{
-            input: {
-              color: "white",
-            },
-
+            input: { color: "white" },
             "& .MuiOutlinedInput-root": {
               borderRadius: "14px",
             },
-
             "& fieldset": {
               borderColor: "rgba(255,255,255,.2)",
             },
-
             "&:hover fieldset": {
               borderColor: "#38BDF8",
             },
@@ -253,12 +265,8 @@ export default function LoginForm() {
       {/* Login Button */}
 
       <motion.div
-        whileHover={{
-          scale: 1.03,
-        }}
-        whileTap={{
-          scale: 0.98,
-        }}
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.98 }}
       >
         <Button
           fullWidth
@@ -271,16 +279,11 @@ export default function LoginForm() {
             borderRadius: "14px",
             background:
               "linear-gradient(90deg,#2563EB,#38BDF8)",
-
             fontWeight: "bold",
-
             fontSize: 16,
-
             textTransform: "none",
-
             boxShadow:
               "0 10px 25px rgba(37,99,235,.35)",
-
             "&:hover": {
               background:
                 "linear-gradient(90deg,#1D4ED8,#0EA5E9)",
@@ -290,24 +293,26 @@ export default function LoginForm() {
           {loading ? (
             <CircularProgress
               size={24}
-              sx={{
-                color: "white",
-              }}
+              sx={{ color: "white" }}
             />
           ) : (
             "Login"
           )}
         </Button>
       </motion.div>
-      
-      {/* Register Link */}
+
+      {/* Register */}
+
       <Box textAlign="center" mt={12}>
         <Typography color="#CBD5E1">
-          Don't have an account?{' '}
+          Don't have an account?{" "}
           <Typography
             component="span"
-            sx={{ color: '#38BDF8', cursor: 'pointer', fontWeight: 100 }}
-            onClick={() => navigate('/register')}
+            sx={{
+              color: "#38BDF8",
+              cursor: "pointer",
+            }}
+            onClick={() => navigate("/register")}
           >
             Register here
           </Typography>
@@ -324,6 +329,31 @@ export default function LoginForm() {
       >
         © 2026 Petrol Bunk Management System
       </Typography>
+
+      {/* Snackbar */}
+
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity={snackbar.severity}
+          variant="filled"
+          sx={{
+            width: "100%",
+            borderRadius: 2,
+          }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+
     </Box>
   );
 }

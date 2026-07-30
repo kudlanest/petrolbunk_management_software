@@ -138,6 +138,7 @@ export default function DashboardLayout() {
         >
           <Outlet />
         </Box>
+        
       </Box>
 
       {/* Footer */}

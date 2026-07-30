@@ -1,3 +1,784 @@
+// import React, { useState } from "react";
+// import axios from "axios";
+// import {
+//   Box,
+//   Paper,
+//   Typography,
+//   Grid,
+//   TextField,
+//   InputAdornment,
+//   Button,
+//   Checkbox,
+//   FormControlLabel,
+//   MenuItem,
+//   CircularProgress,
+// } from "@mui/material";
+
+// import {
+//   Person,
+//   Email,
+//   Phone,
+//   Badge,
+//   Lock,
+// } from "@mui/icons-material";
+
+// import { motion } from "framer-motion";
+// import { useFormik } from "formik";
+// import { useNavigate } from "react-router-dom";
+
+// import registerValidation from "../../validations/registerValidation";
+
+// export default function RegisterForm({ onSuccess }) {
+
+//   const navigate = useNavigate();
+//   const [loading, setLoading] = useState(false);
+
+//   const formik = useFormik({
+
+//     initialValues: {
+
+//       fullName: "",
+//       email: "",
+//       phone: "",
+//       employeeId: "",
+//       username: "",
+//       password: "",
+//       confirmPassword: "",
+//       role: "",
+//       terms: false,
+
+//     },
+
+//     validationSchema: registerValidation,
+
+//     onSubmit: (values) => {
+
+//       setLoading(true);
+
+//       console.log(values);
+
+//       setTimeout(() => {
+
+//         setLoading(false);
+
+//         onSuccess();
+//         //save the data in database
+// const { confirmPassword, terms, ...userData } = values;
+
+// axios.post("http://localhost:8080/createuser", userData)
+//   .then((response) => {
+//     console.log("User registered successfully:", response.data);
+
+//         navigate("/otp-verification");
+//   })
+//   .catch((error) => {
+//     console.error("Error registering user:", error);
+//   });
+
+
+
+        
+    
+
+//       },2000);
+
+//     }
+
+//   });
+
+//   const animation = (delay) => ({
+//     initial: {
+//       opacity: 0,
+//       x: 30,
+//     },
+//     animate: {
+//       opacity: 1,
+//       x: 0,
+//     },
+//     transition: {
+//       duration: 0.6,
+//       delay,
+//     },
+//   });
+
+//   return (
+
+//     <Box
+//       sx={{
+//         minHeight: "100vh",
+//         display: "flex",
+//         justifyContent: "center",
+//         alignItems: "center",
+//         position: "relative",
+//         zIndex: 10,
+//         p: 2,
+//       }}
+//     >
+
+//       <Paper
+
+//         component={motion.div}
+
+//         initial={{
+//           opacity:0,
+//           scale:.9,
+//           y:40
+//         }}
+
+//         animate={{
+//           opacity:1,
+//           scale:1,
+//           y:0
+//         }}
+
+//         transition={{
+//           duration:.8
+//         }}
+
+//         elevation={0}
+
+//         sx={{
+
+//           width:{
+//             xs:"100%",
+//             sm:650,
+//             md:720
+//           },
+
+//           borderRadius:5,
+
+//           p:5,
+
+//           backdropFilter:"blur(25px)",
+
+//           background:"rgba(255,255,255,.08)",
+
+//           border:"1px solid rgba(255,255,255,.12)",
+
+//           boxShadow:"0 0 50px rgba(37,99,235,.3)"
+
+//         }}
+
+//       >
+
+//         <Typography
+//           variant="h4"
+//           align="center"
+//           fontWeight={700}
+//           color="white"
+//         >
+//           Create Account
+//         </Typography>
+
+//         <Typography
+//           align="center"
+//           color="#CBD5E1"
+//           mb={4}
+//         >
+//           Petrol Bunk Management System
+//         </Typography>
+
+//         <form onSubmit={formik.handleSubmit}>
+
+//           <Grid container spacing={2}>
+
+//             {/* Full Name */}
+
+//             <Grid size={{ xs: 12, md: 6 }}>
+
+//               <motion.div {...animation(.1)}>
+
+//                 <TextField
+
+//                   fullWidth
+
+//                   label="Full Name"
+
+//                   name="fullName"
+
+//                   value={formik.values.fullName}
+
+//                   onChange={formik.handleChange}
+
+//                   onBlur={formik.handleBlur}
+
+//                   error={
+
+//                     formik.touched.fullName &&
+
+//                     Boolean(formik.errors.fullName)
+
+//                   }
+
+//                   helperText={
+
+//                     formik.touched.fullName &&
+
+//                     formik.errors.fullName
+
+//                   }
+
+//                   InputProps={{
+
+//                     startAdornment:(
+
+//                       <InputAdornment position="start">
+
+//                         <Person/>
+
+//                       </InputAdornment>
+
+//                     )
+
+//                   }}
+
+//                 />
+
+//               </motion.div>
+
+//             </Grid>
+
+//             {/* Email */}
+
+//             <Grid size={{ xs: 12, md: 6 }}>
+
+//               <motion.div {...animation(.2)}>
+
+//                 <TextField
+
+//                   fullWidth
+
+//                   label="Email"
+
+//                   name="email"
+
+//                   value={formik.values.email}
+
+//                   onChange={formik.handleChange}
+
+//                   onBlur={formik.handleBlur}
+
+//                   error={
+
+//                     formik.touched.email &&
+
+//                     Boolean(formik.errors.email)
+
+//                   }
+
+//                   helperText={
+
+//                     formik.touched.email &&
+
+//                     formik.errors.email
+
+//                   }
+
+//                   InputProps={{
+
+//                     startAdornment:(
+
+//                       <InputAdornment position="start">
+
+//                         <Email/>
+
+//                       </InputAdornment>
+
+//                     )
+
+//                   }}
+
+//                 />
+
+//               </motion.div>
+
+//             </Grid>
+
+//             {/* Phone */}
+
+//             <Grid size={{ xs: 12, md: 6 }}>
+
+//               <motion.div {...animation(.3)}>
+
+//                 <TextField
+
+//                   fullWidth
+
+//                   label="Phone Number"
+
+//                   name="phone"
+
+//                   value={formik.values.phone}
+
+//                   onChange={formik.handleChange}
+
+//                   onBlur={formik.handleBlur}
+
+//                   error={
+
+//                     formik.touched.phone &&
+
+//                     Boolean(formik.errors.phone)
+
+//                   }
+
+//                   helperText={
+
+//                     formik.touched.phone &&
+
+//                     formik.errors.phone
+
+//                   }
+
+//                   InputProps={{
+
+//                     startAdornment:(
+
+//                       <InputAdornment position="start">
+
+//                         <Phone/>
+
+//                       </InputAdornment>
+
+//                     )
+
+//                   }}
+
+//                 />
+
+//               </motion.div>
+
+//             </Grid>
+
+//             {/* Employee ID */}
+
+//             <Grid size={{ xs: 12, md: 6 }}>
+
+//               <motion.div {...animation(.4)}>
+
+//                 <TextField
+
+//                   fullWidth
+
+//                   label="Employee ID"
+
+//                   name="employeeId"
+
+//                   value={formik.values.employeeId}
+
+//                   onChange={formik.handleChange}
+
+//                   onBlur={formik.handleBlur}
+
+//                   error={
+
+//                     formik.touched.employeeId &&
+
+//                     Boolean(formik.errors.employeeId)
+
+//                   }
+
+//                   helperText={
+
+//                     formik.touched.employeeId &&
+
+//                     formik.errors.employeeId
+
+//                   }
+
+//                   InputProps={{
+
+//                     startAdornment:(
+
+//                       <InputAdornment position="start">
+
+//                         <Badge/>
+
+//                       </InputAdornment>
+
+//                     )
+
+//                   }}
+
+//                 />
+
+//               </motion.div>
+
+//             </Grid>
+
+//             {/* Username */}
+
+//             <Grid size={{ xs: 12, md: 6 }}>
+
+//               <motion.div {...animation(.5)}>
+
+//                 <TextField
+
+//                   fullWidth
+
+//                   label="Username"
+
+//                   name="username"
+
+//                   value={formik.values.username}
+
+//                   onChange={formik.handleChange}
+
+//                   onBlur={formik.handleBlur}
+
+//                   error={
+
+//                     formik.touched.username &&
+
+//                     Boolean(formik.errors.username)
+
+//                   }
+
+//                   helperText={
+
+//                     formik.touched.username &&
+
+//                     formik.errors.username
+
+//                   }
+
+//                   InputProps={{
+
+//                     startAdornment:(
+
+//                       <InputAdornment position="start">
+
+//                         <Person/>
+
+//                       </InputAdornment>
+
+//                     )
+
+//                   }}
+
+//                 />
+
+//               </motion.div>
+
+//             </Grid>
+
+//             {/* Password */}
+
+//             <Grid size={{ xs: 12, md: 6 }}>
+
+//               <motion.div {...animation(.6)}>
+
+//                 <TextField
+
+//                   fullWidth
+
+//                   label="Password"
+
+//                   type="password"
+
+//                   name="password"
+
+//                   value={formik.values.password}
+
+//                   onChange={formik.handleChange}
+
+//                   onBlur={formik.handleBlur}
+
+//                   error={
+
+//                     formik.touched.password &&
+
+//                     Boolean(formik.errors.password)
+
+//                   }
+
+//                   helperText={
+
+//                     formik.touched.password &&
+
+//                     formik.errors.password
+
+//                   }
+
+//                   InputProps={{
+
+//                     startAdornment:(
+
+//                       <InputAdornment position="start">
+
+//                         <Lock/>
+
+//                       </InputAdornment>
+
+//                     )
+
+//                   }}
+
+//                 />
+
+//               </motion.div>
+
+//             </Grid>
+
+//             {/* Confirm Password */}
+
+//             <Grid size={{ xs: 12, md: 6 }}>
+
+//               <motion.div {...animation(.7)}>
+
+//                 <TextField
+
+//                   fullWidth
+
+//                   label="Confirm Password"
+
+//                   type="password"
+
+//                   name="confirmPassword"
+
+//                   value={formik.values.confirmPassword}
+
+//                   onChange={formik.handleChange}
+
+//                   onBlur={formik.handleBlur}
+
+//                   error={
+
+//                     formik.touched.confirmPassword &&
+
+//                     Boolean(formik.errors.confirmPassword)
+
+//                   }
+
+//                   helperText={
+
+//                     formik.touched.confirmPassword &&
+
+//                     formik.errors.confirmPassword
+
+//                   }
+
+//                   InputProps={{
+
+//                     startAdornment:(
+
+//                       <InputAdornment position="start">
+
+//                         <Lock/>
+
+//                       </InputAdornment>
+
+//                     )
+
+//                   }}
+
+//                 />
+
+//               </motion.div>
+
+//             </Grid>
+
+//             {/* Role */}
+
+//             <Grid size={{ xs: 12, md: 6 }}>
+
+//               <motion.div {...animation(.8)}>
+
+//                 <TextField
+
+//                   fullWidth
+
+//                   select
+
+//                   label="Role"
+
+//                   name="role"
+
+//                   value={formik.values.role}
+
+//                   onChange={formik.handleChange}
+
+//                   onBlur={formik.handleBlur}
+
+//                   error={
+
+//                     formik.touched.role &&
+
+//                     Boolean(formik.errors.role)
+
+//                   }
+
+//                   helperText={
+
+//                     formik.touched.role &&
+
+//                     formik.errors.role
+
+//                   }
+
+//                 >
+
+//                   <MenuItem value="">Select Role</MenuItem>
+
+//                   <MenuItem value="Admin">Admin</MenuItem>
+
+//                   <MenuItem value="Manager">Manager</MenuItem>
+
+//                   <MenuItem value="Cashier">Cashier</MenuItem>
+
+//                   <MenuItem value="Attendant">Attendant</MenuItem>
+
+//                 </TextField>
+
+//               </motion.div>
+
+//             </Grid>
+
+//             {/* Terms */}
+
+//             <Grid item xs={12}>
+
+//               <motion.div {...animation(.9)}>
+
+//                 <FormControlLabel
+
+//                   control={
+
+//                     <Checkbox
+
+//                       name="terms"
+
+//                       checked={formik.values.terms}
+
+//                       onChange={formik.handleChange}
+
+//                       onBlur={formik.handleBlur}
+
+//                       sx={{ color: "#38BDF8" }}
+
+//                     />
+
+//                   }
+
+//                   label={
+
+//                     <Typography color="#CBD5E1">
+
+//                       I agree to the Terms & Conditions
+
+//                     </Typography>
+
+//                   }
+
+//                 />
+
+//                 {formik.touched.terms && formik.errors.terms && (
+
+//                   <Typography
+
+//                     color="error"
+
+//                     sx={{ fontSize: 12, ml: 1 }}
+
+//                   >
+
+//                     {formik.errors.terms}
+
+//                   </Typography>
+
+//                 )}
+
+//               </motion.div>
+
+//             </Grid>
+
+//             {/* Submit Button */}
+
+//             <Grid item xs={12} >
+
+//               <motion.div {...animation(1)}>
+
+//                 <Button
+
+//                   type="submit"
+
+//                   fullWidth
+
+//                   variant="contained"
+
+//                   disabled={loading}
+
+//                   sx={{
+
+//                     mt: 4,
+//                     ml:5,
+
+//                     height: 55,
+
+//                     borderRadius: "14px",
+
+//                     background: "linear-gradient(90deg,#2563EB,#38BDF8)",
+
+//                     fontWeight: "bold",
+
+//                     fontSize: 16,
+
+//                     textTransform: "none",
+
+//                     boxShadow: "0 10px 25px rgba(37,99,235,.35)",
+
+//                     "&:hover": {
+
+//                       background: "linear-gradient(90deg,#1D4ED8,#0EA5E9)",
+
+//                     },
+
+//                   }}
+
+//                 >
+
+//                   {loading ? (
+
+//                     <CircularProgress size={24} sx={{ color: "white" }} />
+
+//                   ) : (
+
+//                     "Create Account"
+
+//                   )}
+
+//                 </Button>
+
+//               </motion.div>
+
+//             </Grid>
+
+//           </Grid>
+
+//         </form>
+
+//         {/* Login Link */}
+//         <Box textAlign="center" mt={2}>
+//           <Typography color="#CBD5E1" fontSize={14}>
+//             Already have an account?{' '}
+//             <Typography
+//               component="span"
+//               sx={{ color: '#38BDF8', cursor: 'pointer', fontWeight: 100}}
+//               onClick={() => navigate('/login')}
+//             >
+//               Login here
+//             </Typography>
+//           </Typography>
+//         </Box>
+
+//       </Paper>
+
+//     </Box>
+
+//   );
+
+// }
+
 import React, { useState } from "react";
 import axios from "axios";
 import {
@@ -12,6 +793,8 @@ import {
   FormControlLabel,
   MenuItem,
   CircularProgress,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 
 import {
@@ -27,11 +810,24 @@ import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 
 import registerValidation from "../../validations/registerValidation";
+import API_BASE_URL from "../../config/api";
 
 export default function RegisterForm({ onSuccess }) {
 
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+
+  // Toast state
+  const [toast, setToast] = useState({
+    open: false,
+    message: "",
+    severity: "success", // "success" | "error"
+  });
+
+  const handleCloseToast = (event, reason) => {
+    if (reason === "clickaway") return;
+    setToast((prev) => ({ ...prev, open: false }));
+  };
 
   const formik = useFormik({
 
@@ -57,30 +853,48 @@ export default function RegisterForm({ onSuccess }) {
 
       console.log(values);
 
-      setTimeout(() => {
+      //save the data in database
+      const { confirmPassword, terms, ...userData } = values;
 
-        setLoading(false);
+      axios.post(`${API_BASE_URL}/auth/register`, userData)
+        .then((response) => {
+          console.log("User registered successfully:", response.data);
 
-        onSuccess();
-        //save the data in database
-const { confirmPassword, terms, ...userData } = values;
+          setToast({
+            open: true,
+            message: "Account created successfully!",
+            severity: "success",
+          });
 
-axios.post("http://localhost:8080/createuser", userData)
-  .then((response) => {
-    console.log("User registered successfully:", response.data);
+          setLoading(false);
+          onSuccess();
 
-        navigate("/otp-verification");
-  })
-  .catch((error) => {
-    console.error("Error registering user:", error);
-  });
+          // slight delay so the toast is visible before navigating away
+          setTimeout(() => {
+            navigate("/otp-verification");
+          }, 1200);
+        })
+        .catch((error) => {
+          console.error("Error registering user:", error);
 
+          const errData = error.response?.data;
 
+          // If backend sends { field, message }, highlight the exact field
+          if (errData?.field) {
+            formik.setFieldError(errData.field, errData.message);
+            formik.setFieldTouched(errData.field, true, false);
+          }
 
-        
-    
+          setToast({
+            open: true,
+            message:
+              errData?.message ||
+              (typeof errData === "string" ? errData : "Registration failed. Please try again."),
+            severity: "error",
+          });
 
-      },2000);
+          setLoading(false);
+        });
 
     }
 
@@ -102,679 +916,696 @@ axios.post("http://localhost:8080/createuser", userData)
   });
 
   return (
-
-    <Box
-      sx={{
-        minHeight: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        position: "relative",
-        zIndex: 10,
-        p: 2,
-      }}
-    >
-
-      <Paper
-
-        component={motion.div}
-
-        initial={{
-          opacity:0,
-          scale:.9,
-          y:40
-        }}
-
-        animate={{
-          opacity:1,
-          scale:1,
-          y:0
-        }}
-
-        transition={{
-          duration:.8
-        }}
-
-        elevation={0}
-
+    <>
+      <Box
         sx={{
-
-          width:{
-            xs:"100%",
-            sm:650,
-            md:720
-          },
-
-          borderRadius:5,
-
-          p:5,
-
-          backdropFilter:"blur(25px)",
-
-          background:"rgba(255,255,255,.08)",
-
-          border:"1px solid rgba(255,255,255,.12)",
-
-          boxShadow:"0 0 50px rgba(37,99,235,.3)"
-
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          position: "relative",
+          zIndex: 10,
+          p: 2,
         }}
-
       >
 
-        <Typography
-          variant="h4"
-          align="center"
-          fontWeight={700}
-          color="white"
+        <Paper
+
+          component={motion.div}
+
+          initial={{
+            opacity:0,
+            scale:.9,
+            y:40
+          }}
+
+          animate={{
+            opacity:1,
+            scale:1,
+            y:0
+          }}
+
+          transition={{
+            duration:.8
+          }}
+
+          elevation={0}
+
+          sx={{
+
+            width:{
+              xs:"100%",
+              sm:650,
+              md:720
+            },
+
+            borderRadius:5,
+
+            p:5,
+
+            backdropFilter:"blur(25px)",
+
+            background:"rgba(255,255,255,.08)",
+
+            border:"1px solid rgba(255,255,255,.12)",
+
+            boxShadow:"0 0 50px rgba(37,99,235,.3)"
+
+          }}
+
         >
-          Create Account
-        </Typography>
 
-        <Typography
-          align="center"
-          color="#CBD5E1"
-          mb={4}
-        >
-          Petrol Bunk Management System
-        </Typography>
+          <Typography
+            variant="h4"
+            align="center"
+            fontWeight={700}
+            color="white"
+          >
+            Create Account
+          </Typography>
 
-        <form onSubmit={formik.handleSubmit}>
+          <Typography
+            align="center"
+            color="#CBD5E1"
+            mb={4}
+          >
+            Petrol Bunk Management System
+          </Typography>
 
-          <Grid container spacing={2}>
+          <form onSubmit={formik.handleSubmit}>
 
-            {/* Full Name */}
+            <Grid container spacing={2}>
 
-            <Grid size={{ xs: 12, md: 6 }}>
+              {/* Full Name */}
 
-              <motion.div {...animation(.1)}>
+              <Grid size={{ xs: 12, md: 6 }}>
 
-                <TextField
+                <motion.div {...animation(.1)}>
 
-                  fullWidth
+                  <TextField
 
-                  label="Full Name"
+                    fullWidth
 
-                  name="fullName"
+                    label="Full Name"
 
-                  value={formik.values.fullName}
+                    name="fullName"
 
-                  onChange={formik.handleChange}
+                    value={formik.values.fullName}
 
-                  onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
 
-                  error={
+                    onBlur={formik.handleBlur}
 
-                    formik.touched.fullName &&
+                    error={
 
-                    Boolean(formik.errors.fullName)
+                      formik.touched.fullName &&
 
-                  }
+                      Boolean(formik.errors.fullName)
 
-                  helperText={
+                    }
 
-                    formik.touched.fullName &&
+                    helperText={
 
-                    formik.errors.fullName
+                      formik.touched.fullName &&
 
-                  }
+                      formik.errors.fullName
 
-                  InputProps={{
+                    }
 
-                    startAdornment:(
+                    InputProps={{
 
-                      <InputAdornment position="start">
+                      startAdornment:(
 
-                        <Person/>
+                        <InputAdornment position="start">
 
-                      </InputAdornment>
+                          <Person/>
 
-                    )
+                        </InputAdornment>
 
-                  }}
+                      )
 
-                />
+                    }}
 
-              </motion.div>
+                  />
 
-            </Grid>
+                </motion.div>
 
-            {/* Email */}
+              </Grid>
 
-            <Grid size={{ xs: 12, md: 6 }}>
+              {/* Email */}
 
-              <motion.div {...animation(.2)}>
+              <Grid size={{ xs: 12, md: 6 }}>
 
-                <TextField
+                <motion.div {...animation(.2)}>
 
-                  fullWidth
+                  <TextField
 
-                  label="Email"
+                    fullWidth
 
-                  name="email"
+                    label="Email"
 
-                  value={formik.values.email}
+                    name="email"
 
-                  onChange={formik.handleChange}
+                    value={formik.values.email}
 
-                  onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
 
-                  error={
+                    onBlur={formik.handleBlur}
 
-                    formik.touched.email &&
+                    error={
 
-                    Boolean(formik.errors.email)
+                      formik.touched.email &&
 
-                  }
+                      Boolean(formik.errors.email)
 
-                  helperText={
+                    }
 
-                    formik.touched.email &&
+                    helperText={
 
-                    formik.errors.email
+                      formik.touched.email &&
 
-                  }
+                      formik.errors.email
 
-                  InputProps={{
+                    }
 
-                    startAdornment:(
+                    InputProps={{
 
-                      <InputAdornment position="start">
+                      startAdornment:(
 
-                        <Email/>
+                        <InputAdornment position="start">
 
-                      </InputAdornment>
+                          <Email/>
 
-                    )
+                        </InputAdornment>
 
-                  }}
+                      )
 
-                />
+                    }}
 
-              </motion.div>
+                  />
 
-            </Grid>
+                </motion.div>
 
-            {/* Phone */}
+              </Grid>
 
-            <Grid size={{ xs: 12, md: 6 }}>
+              {/* Phone */}
 
-              <motion.div {...animation(.3)}>
+              <Grid size={{ xs: 12, md: 6 }}>
 
-                <TextField
+                <motion.div {...animation(.3)}>
 
-                  fullWidth
+                  <TextField
 
-                  label="Phone Number"
+                    fullWidth
 
-                  name="phone"
+                    label="Phone Number"
 
-                  value={formik.values.phone}
+                    name="phone"
 
-                  onChange={formik.handleChange}
+                    value={formik.values.phone}
 
-                  onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
 
-                  error={
+                    onBlur={formik.handleBlur}
 
-                    formik.touched.phone &&
+                    error={
 
-                    Boolean(formik.errors.phone)
+                      formik.touched.phone &&
 
-                  }
+                      Boolean(formik.errors.phone)
 
-                  helperText={
+                    }
 
-                    formik.touched.phone &&
+                    helperText={
 
-                    formik.errors.phone
+                      formik.touched.phone &&
 
-                  }
+                      formik.errors.phone
 
-                  InputProps={{
+                    }
 
-                    startAdornment:(
+                    InputProps={{
 
-                      <InputAdornment position="start">
+                      startAdornment:(
 
-                        <Phone/>
+                        <InputAdornment position="start">
 
-                      </InputAdornment>
+                          <Phone/>
 
-                    )
+                        </InputAdornment>
 
-                  }}
+                      )
 
-                />
+                    }}
 
-              </motion.div>
+                  />
 
-            </Grid>
+                </motion.div>
 
-            {/* Employee ID */}
+              </Grid>
 
-            <Grid size={{ xs: 12, md: 6 }}>
+              {/* Employee ID */}
 
-              <motion.div {...animation(.4)}>
+              <Grid size={{ xs: 12, md: 6 }}>
 
-                <TextField
+                <motion.div {...animation(.4)}>
 
-                  fullWidth
+                  <TextField
 
-                  label="Employee ID"
+                    fullWidth
 
-                  name="employeeId"
+                    label="Employee ID"
 
-                  value={formik.values.employeeId}
+                    name="employeeId"
 
-                  onChange={formik.handleChange}
+                    value={formik.values.employeeId}
 
-                  onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
 
-                  error={
+                    onBlur={formik.handleBlur}
 
-                    formik.touched.employeeId &&
+                    error={
 
-                    Boolean(formik.errors.employeeId)
+                      formik.touched.employeeId &&
 
-                  }
+                      Boolean(formik.errors.employeeId)
 
-                  helperText={
+                    }
 
-                    formik.touched.employeeId &&
+                    helperText={
 
-                    formik.errors.employeeId
+                      formik.touched.employeeId &&
 
-                  }
+                      formik.errors.employeeId
 
-                  InputProps={{
+                    }
 
-                    startAdornment:(
+                    InputProps={{
 
-                      <InputAdornment position="start">
+                      startAdornment:(
 
-                        <Badge/>
+                        <InputAdornment position="start">
 
-                      </InputAdornment>
+                          <Badge/>
 
-                    )
+                        </InputAdornment>
 
-                  }}
+                      )
 
-                />
+                    }}
 
-              </motion.div>
+                  />
 
-            </Grid>
+                </motion.div>
 
-            {/* Username */}
+              </Grid>
 
-            <Grid size={{ xs: 12, md: 6 }}>
+              {/* Username */}
 
-              <motion.div {...animation(.5)}>
+              <Grid size={{ xs: 12, md: 6 }}>
 
-                <TextField
+                <motion.div {...animation(.5)}>
 
-                  fullWidth
+                  <TextField
 
-                  label="Username"
+                    fullWidth
 
-                  name="username"
+                    label="Username"
 
-                  value={formik.values.username}
+                    name="username"
 
-                  onChange={formik.handleChange}
+                    value={formik.values.username}
 
-                  onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
 
-                  error={
+                    onBlur={formik.handleBlur}
 
-                    formik.touched.username &&
+                    error={
 
-                    Boolean(formik.errors.username)
+                      formik.touched.username &&
 
-                  }
+                      Boolean(formik.errors.username)
 
-                  helperText={
+                    }
 
-                    formik.touched.username &&
+                    helperText={
 
-                    formik.errors.username
+                      formik.touched.username &&
 
-                  }
+                      formik.errors.username
 
-                  InputProps={{
+                    }
 
-                    startAdornment:(
+                    InputProps={{
 
-                      <InputAdornment position="start">
+                      startAdornment:(
 
-                        <Person/>
+                        <InputAdornment position="start">
 
-                      </InputAdornment>
+                          <Person/>
 
-                    )
+                        </InputAdornment>
 
-                  }}
+                      )
 
-                />
+                    }}
 
-              </motion.div>
+                  />
 
-            </Grid>
+                </motion.div>
 
-            {/* Password */}
+              </Grid>
 
-            <Grid size={{ xs: 12, md: 6 }}>
+              {/* Password */}
 
-              <motion.div {...animation(.6)}>
+              <Grid size={{ xs: 12, md: 6 }}>
 
-                <TextField
+                <motion.div {...animation(.6)}>
 
-                  fullWidth
+                  <TextField
 
-                  label="Password"
+                    fullWidth
 
-                  type="password"
+                    label="Password"
 
-                  name="password"
+                    type="password"
 
-                  value={formik.values.password}
+                    name="password"
 
-                  onChange={formik.handleChange}
+                    value={formik.values.password}
 
-                  onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
 
-                  error={
+                    onBlur={formik.handleBlur}
 
-                    formik.touched.password &&
+                    error={
 
-                    Boolean(formik.errors.password)
+                      formik.touched.password &&
 
-                  }
+                      Boolean(formik.errors.password)
 
-                  helperText={
+                    }
 
-                    formik.touched.password &&
+                    helperText={
 
-                    formik.errors.password
+                      formik.touched.password &&
 
-                  }
+                      formik.errors.password
 
-                  InputProps={{
+                    }
 
-                    startAdornment:(
+                    InputProps={{
 
-                      <InputAdornment position="start">
+                      startAdornment:(
 
-                        <Lock/>
+                        <InputAdornment position="start">
 
-                      </InputAdornment>
+                          <Lock/>
 
-                    )
+                        </InputAdornment>
 
-                  }}
+                      )
 
-                />
+                    }}
 
-              </motion.div>
+                  />
 
-            </Grid>
+                </motion.div>
 
-            {/* Confirm Password */}
+              </Grid>
 
-            <Grid size={{ xs: 12, md: 6 }}>
+              {/* Confirm Password */}
 
-              <motion.div {...animation(.7)}>
+              <Grid size={{ xs: 12, md: 6 }}>
 
-                <TextField
+                <motion.div {...animation(.7)}>
 
-                  fullWidth
+                  <TextField
 
-                  label="Confirm Password"
+                    fullWidth
 
-                  type="password"
+                    label="Confirm Password"
 
-                  name="confirmPassword"
+                    type="password"
 
-                  value={formik.values.confirmPassword}
+                    name="confirmPassword"
 
-                  onChange={formik.handleChange}
+                    value={formik.values.confirmPassword}
 
-                  onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
 
-                  error={
+                    onBlur={formik.handleBlur}
 
-                    formik.touched.confirmPassword &&
+                    error={
 
-                    Boolean(formik.errors.confirmPassword)
+                      formik.touched.confirmPassword &&
 
-                  }
+                      Boolean(formik.errors.confirmPassword)
 
-                  helperText={
+                    }
 
-                    formik.touched.confirmPassword &&
+                    helperText={
 
-                    formik.errors.confirmPassword
+                      formik.touched.confirmPassword &&
 
-                  }
+                      formik.errors.confirmPassword
 
-                  InputProps={{
+                    }
 
-                    startAdornment:(
+                    InputProps={{
 
-                      <InputAdornment position="start">
+                      startAdornment:(
 
-                        <Lock/>
+                        <InputAdornment position="start">
 
-                      </InputAdornment>
+                          <Lock/>
 
-                    )
+                        </InputAdornment>
 
-                  }}
+                      )
 
-                />
+                    }}
 
-              </motion.div>
+                  />
 
-            </Grid>
+                </motion.div>
 
-            {/* Role */}
+              </Grid>
 
-            <Grid size={{ xs: 12, md: 6 }}>
+              {/* Role */}
 
-              <motion.div {...animation(.8)}>
+              <Grid size={{ xs: 12, md: 6 }}>
 
-                <TextField
+                <motion.div {...animation(.8)}>
 
-                  fullWidth
+                  <TextField
 
-                  select
+                    fullWidth
 
-                  label="Role"
+                    select
 
-                  name="role"
+                    label="Role"
 
-                  value={formik.values.role}
+                    name="role"
 
-                  onChange={formik.handleChange}
+                    value={formik.values.role}
 
-                  onBlur={formik.handleBlur}
+                    onChange={formik.handleChange}
 
-                  error={
+                    onBlur={formik.handleBlur}
 
-                    formik.touched.role &&
+                    error={
 
-                    Boolean(formik.errors.role)
+                      formik.touched.role &&
 
-                  }
+                      Boolean(formik.errors.role)
 
-                  helperText={
+                    }
 
-                    formik.touched.role &&
+                    helperText={
 
-                    formik.errors.role
+                      formik.touched.role &&
 
-                  }
+                      formik.errors.role
 
-                >
-
-                  <MenuItem value="">Select Role</MenuItem>
-
-                  <MenuItem value="Admin">Admin</MenuItem>
-
-                  <MenuItem value="Manager">Manager</MenuItem>
-
-                  <MenuItem value="Cashier">Cashier</MenuItem>
-
-                  <MenuItem value="Attendant">Attendant</MenuItem>
-
-                </TextField>
-
-              </motion.div>
-
-            </Grid>
-
-            {/* Terms */}
-
-            <Grid item xs={12}>
-
-              <motion.div {...animation(.9)}>
-
-                <FormControlLabel
-
-                  control={
-
-                    <Checkbox
-
-                      name="terms"
-
-                      checked={formik.values.terms}
-
-                      onChange={formik.handleChange}
-
-                      onBlur={formik.handleBlur}
-
-                      sx={{ color: "#38BDF8" }}
-
-                    />
-
-                  }
-
-                  label={
-
-                    <Typography color="#CBD5E1">
-
-                      I agree to the Terms & Conditions
-
-                    </Typography>
-
-                  }
-
-                />
-
-                {formik.touched.terms && formik.errors.terms && (
-
-                  <Typography
-
-                    color="error"
-
-                    sx={{ fontSize: 12, ml: 1 }}
+                    }
 
                   >
 
-                    {formik.errors.terms}
+                    <MenuItem value="">Select Role</MenuItem>
 
-                  </Typography>
+                    <MenuItem value="Admin">Admin</MenuItem>
 
-                )}
+                    <MenuItem value="Manager">Manager</MenuItem>
 
-              </motion.div>
+                    <MenuItem value="Cashier">Cashier</MenuItem>
 
-            </Grid>
+                    <MenuItem value="Attendant">Attendant</MenuItem>
 
-            {/* Submit Button */}
+                  </TextField>
 
-            <Grid item xs={12} >
+                </motion.div>
 
-              <motion.div {...animation(1)}>
+              </Grid>
 
-                <Button
+              {/* Terms */}
 
-                  type="submit"
+              <Grid item xs={12}>
 
-                  fullWidth
+                <motion.div {...animation(.9)}>
 
-                  variant="contained"
+                  <FormControlLabel
 
-                  disabled={loading}
+                    control={
 
-                  sx={{
+                      <Checkbox
 
-                    mt: 4,
-                    ml:5,
+                        name="terms"
 
-                    height: 55,
+                        checked={formik.values.terms}
 
-                    borderRadius: "14px",
+                        onChange={formik.handleChange}
 
-                    background: "linear-gradient(90deg,#2563EB,#38BDF8)",
+                        onBlur={formik.handleBlur}
 
-                    fontWeight: "bold",
+                        sx={{ color: "#38BDF8" }}
 
-                    fontSize: 16,
+                      />
 
-                    textTransform: "none",
+                    }
 
-                    boxShadow: "0 10px 25px rgba(37,99,235,.35)",
+                    label={
 
-                    "&:hover": {
+                      <Typography color="#CBD5E1">
 
-                      background: "linear-gradient(90deg,#1D4ED8,#0EA5E9)",
+                        I agree to the Terms & Conditions
 
-                    },
+                      </Typography>
 
-                  }}
+                    }
 
-                >
+                  />
 
-                  {loading ? (
+                  {formik.touched.terms && formik.errors.terms && (
 
-                    <CircularProgress size={24} sx={{ color: "white" }} />
+                    <Typography
 
-                  ) : (
+                      color="error"
 
-                    "Create Account"
+                      sx={{ fontSize: 12, ml: 1 }}
+
+                    >
+
+                      {formik.errors.terms}
+
+                    </Typography>
 
                   )}
 
-                </Button>
+                </motion.div>
 
-              </motion.div>
+              </Grid>
+
+              {/* Submit Button */}
+
+              <Grid item xs={12} >
+
+                <motion.div {...animation(1)}>
+
+                  <Button
+
+                    type="submit"
+
+                    fullWidth
+
+                    variant="contained"
+
+                    disabled={loading}
+
+                    sx={{
+
+                      mt: 4,
+                      ml:5,
+
+                      height: 55,
+
+                      borderRadius: "14px",
+
+                      background: "linear-gradient(90deg,#2563EB,#38BDF8)",
+
+                      fontWeight: "bold",
+
+                      fontSize: 16,
+
+                      textTransform: "none",
+
+                      boxShadow: "0 10px 25px rgba(37,99,235,.35)",
+
+                      "&:hover": {
+
+                        background: "linear-gradient(90deg,#1D4ED8,#0EA5E9)",
+
+                      },
+
+                    }}
+
+                  >
+
+                    {loading ? (
+
+                      <CircularProgress size={24} sx={{ color: "white" }} />
+
+                    ) : (
+
+                      "Create Account"
+
+                    )}
+
+                  </Button>
+
+                </motion.div>
+
+              </Grid>
 
             </Grid>
 
-          </Grid>
+          </form>
 
-        </form>
-
-        {/* Login Link */}
-        <Box textAlign="center" mt={2}>
-          <Typography color="#CBD5E1" fontSize={14}>
-            Already have an account?{' '}
-            <Typography
-              component="span"
-              sx={{ color: '#38BDF8', cursor: 'pointer', fontWeight: 100}}
-              onClick={() => navigate('/login')}
-            >
-              Login here
+          {/* Login Link */}
+          <Box textAlign="center" mt={2}>
+            <Typography color="#CBD5E1" fontSize={14}>
+              Already have an account?{' '}
+              <Typography
+                component="span"
+                sx={{ color: '#38BDF8', cursor: 'pointer', fontWeight: 100}}
+                onClick={() => navigate('/login')}
+              >
+                Login here
+              </Typography>
             </Typography>
-          </Typography>
-        </Box>
+          </Box>
 
-      </Paper>
+        </Paper>
 
-    </Box>
+      </Box>
 
+      {/* Toast Notification */}
+      <Snackbar
+        open={toast.open}
+        autoHideDuration={4000}
+        onClose={handleCloseToast}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseToast}
+          severity={toast.severity}
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {toast.message}
+        </Alert>
+      </Snackbar>
+    </>
   );
 
 }
