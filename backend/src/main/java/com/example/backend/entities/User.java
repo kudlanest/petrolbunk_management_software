@@ -5,16 +5,20 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import jakarta.persistence.UniqueConstraint;
 
 
 
-@Table(name = "users")
+
+
+@Table(name = "users", uniqueConstraints = {
+	    @UniqueConstraint(columnNames = "username"),
+	    @UniqueConstraint(columnNames = "email"),
+	    @UniqueConstraint(columnNames = "phone"),
+	    @UniqueConstraint(columnNames = "employeeId")
+	})
 
 
 
