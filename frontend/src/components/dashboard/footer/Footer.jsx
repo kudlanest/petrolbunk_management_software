@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Link } from "@mui/material";
 
 export default function Footer() {
   return (
@@ -21,15 +21,22 @@ export default function Footer() {
         color="#CBD5E1"
       >
         Designed & Developed by{" "}
-        <Typography
-          component="span"
-          sx={{
-            color: "#38BDF8",
-            fontWeight: 700,
-          }}
-        >
-          Kudlanest
-        </Typography>
+  <Link
+  href="https://kudlanest.vercel.app/" // Replace with your actual website URL
+  target="_blank"
+  rel="noopener noreferrer"
+  underline="none"
+  sx={{
+    color: "#38BDF8",
+    fontWeight: 700,
+    "&:hover": {
+      color: "#0EA5E9",
+      textDecoration: "underline",
+    },
+  }}
+>
+  Kudlanest
+</Link>
       </Typography>
 
       <Typography
