@@ -11,10 +11,14 @@ import DashboardLayout from "../layouts/DashboardLayout";
 
 // Dashboard Pages
 import Dashboard from "../pages/dashboard/Dashboard";
+import FuelRate from "../pages/dashboard/fuelRate/FuelRate";
+import FuelRateHistory from "../components/dashboard/fuelRate/FuelRateHistory";
 
 
 //To prevent the user from accessing the pages ,if the user not logged in
 import ProtectedRoute from "./ProtectedRoute";
+
+
 
 
 export default function AppRoutes() {
@@ -32,6 +36,11 @@ export default function AppRoutes() {
         </ProtectedRoute>
       }>
         <Route index element={<Dashboard />} />
+        <Route path="fuel-rate" element={<FuelRate />} />
+        <Route
+          path="fuel-rate/history"
+          element={<FuelRateHistory />}
+        />
       </Route>
 
     </Routes>

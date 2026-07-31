@@ -19,7 +19,7 @@ const SidebarMenu = [
 
     {
         title: "Fuel Rate",
-        path: "/fuel-rate",
+        path: "/dashboard/fuel-rate",
         icon: <LocalGasStationIcon />
     },
 
