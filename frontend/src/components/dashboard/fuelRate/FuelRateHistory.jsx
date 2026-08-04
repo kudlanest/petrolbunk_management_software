@@ -7,7 +7,7 @@ import {
   Button,
   MenuItem,
 } from "@mui/material";
-import { useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef,useEffect } from "react";
 
 import dayjs from "dayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -33,6 +33,10 @@ import { useReactToPrint } from "react-to-print";
 import PrintFuelRateHistory from "./PrintFuelRateHistory";
 import FuelRateHistoryCards from "./FuelRateHistoryCards";  
 
+import {
+  getFuelRateHistory,
+} from "../../../services/fuelRate/fuelRateService";
+
 export default function FuelRateHistory() {
 
   const [fuel, setFuel] = useState("All");
@@ -42,26 +46,42 @@ const [selectedDate, setSelectedDate] = useState(null);
 const printRef = useRef();
 const [refreshing, setRefreshing] = useState(false);
 
-const history = [
-  {
-    id: 1,
-    fuel: "Petrol",
-    oldRate: 103.5,
-    newRate: 104.5,
-    updatedBy: "Admin",
-    date: "2026-07-31",
-    time: "10:30 AM",
-  },
-  {
-    id: 2,
-    fuel: "Diesel",
-    oldRate: 94.3,
-    newRate: 93.8,
-    updatedBy: "Admin",
-    date: "2026-07-31",
-    time: "11:00 AM",
-  },
-];
+// const history = [
+//   {
+//     id: 1,
+//     fuel: "Petrol",
+//     oldRate: 103.5,
+//     newRate: 104.5,
+//     updatedBy: "Admin",
+//     date: "2026-07-31",
+//     time: "10:30 AM",
+//   },
+//   {
+//     id: 2,
+//     fuel: "Diesel",
+//     oldRate: 94.3,
+//     newRate: 93.8,
+//     updatedBy: "Admin",
+//     date: "2026-07-31",
+//     time: "11:00 AM",
+//   },
+// ];
+
+const [history, setHistory] = useState([]);
+
+useEffect(() => {
+    loadHistory();
+}, []);
+
+const loadHistory = async () => {
+    try {
+        const response = await getFuelRateHistory();
+        setHistory(response.data);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
 
 const filteredHistory = useMemo(() => {
   return history.filter((item) => {
@@ -73,10 +93,16 @@ const filteredHistory = useMemo(() => {
     const matchesFuel =
       fuel === "All" || item.fuel === fuel;
 
-    const matchesDate =
-    !selectedDate ||
-    dayjs(item.date).format("YYYY-MM-DD") === selectedDate.format("YYYY-MM-DD");
+    // const matchesDate =
+    // !selectedDate ||
+    // dayjs(item.date).format("YYYY-MM-DD") === selectedDate.format("YYYY-MM-DD");
 
+
+    const matchesDate =
+  !selectedDate ||
+  dayjs(item.updatedDate, "DD MMM YYYY").format("YYYY-MM-DD") ===
+    selectedDate.format("YYYY-MM-DD");
+    
     return matchesSearch && matchesFuel && matchesDate;
 
   });
@@ -87,22 +113,37 @@ const handlePrint = useReactToPrint({
   documentTitle: "Fuel Rate History",
 });
 
-const handleRefresh = () => {
-  // Reset filters
-  setSearch("");
-  setFuel("All");
-  setSelectedDate(null);
+// const handleRefresh = () => {
+//   // Reset filters
+//   setSearch("");
+//   setFuel("All");
+//   setSelectedDate(null);
 
-   setTimeout(() => {
-    setRefreshing(false);
-  }, 600);
+//    setTimeout(() => {
+//     setRefreshing(false);
+//   }, 600);
+
+const handleRefresh = async () => {
+
+    setRefreshing(true);
+
+    setSearch("");
+    setFuel("All");
+    setSelectedDate(null);
+
+    try {
+        await loadHistory();
+    } finally {
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 500);
+    }
+};
 
 
   // Later when backend is connected:
   // fetchFuelRateHistory();
 
-  console.log("Fuel Rate History Refreshed");
-};
 
   return (
     
@@ -255,5 +296,5 @@ const handleRefresh = () => {
 />
 
   </Box>
-);
+  )
 }

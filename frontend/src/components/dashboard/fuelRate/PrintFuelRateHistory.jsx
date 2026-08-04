@@ -87,9 +87,9 @@ export default function PrintFuelRateHistory({ history }) {
 
               <TableCell>{row.updatedBy}</TableCell>
 
-              <TableCell>{row.date}</TableCell>
+              <TableCell>{row.updatedDate}</TableCell>
 
-              <TableCell>{row.time}</TableCell>
+              <TableCell>{row.updatedTime}</TableCell>
 
             </TableRow>
 

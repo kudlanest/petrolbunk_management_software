@@ -36,8 +36,8 @@ export const exportFuelRateHistoryPDF = (history) => {
       item.oldRate,
       item.newRate,
       item.updatedBy,
-      item.date,
-      item.time
+      item.updatedDate,
+      item.updatedTime
     ]),
 
     styles: {

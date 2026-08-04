@@ -10,54 +10,28 @@ import {
   Box,
 } from "@mui/material";
 
-import  AppSnackbar from "../../common/AppSnackbar"; 
-
-export default function UpdateFuelRateDialog({
+export default function AddFuelRateDialog({
   open,
   onClose,
-  fuelRates,
-  onUpdate,
+  fuels,
+  onSave,
 }) {
   const [fuelId, setFuelId] = useState("");
   const [rate, setRate] = useState("");
-  const user = JSON.parse(localStorage.getItem("user"));
 
-  const [snackbar, setSnackbar] = useState({
-  open: false,
-  message: "",
-  severity: "success",
-});
-
-const handleCloseSnackbar = () => {
-  setSnackbar((prev) => ({
-    ...prev,
-    open: false,
-  }));
-};
-
-  const handleSubmit = () => {
+  const handleSave = () => {
     if (!fuelId || !rate) {
-      setSnackbar({
-  open: true,
-  message: "Please Fill the Required Fields.",
-  severity: "error",
-});
+      alert("Please fill all fields.");
       return;
     }
-console.log({
-  // fuelId,
-  // rate: Number(rate),
-  updatedBy: user.role,
-});
-    onUpdate({
+
+    onSave({
       fuelId,
       rate: Number(rate),
-      updatedBy: user.role,
     });
 
     setFuelId("");
     setRate("");
-
     onClose();
   };
 
@@ -67,6 +41,8 @@ console.log({
     onClose();
   };
 
+//   console.log("Fuels in AddFuelRateDialog:", fuels);
+
   return (
     <Dialog
       open={open}
@@ -75,20 +51,14 @@ console.log({
       maxWidth="sm"
     >
       <DialogTitle
-        sx={{
-          fontWeight: "bold",
-        }}
+        sx={{ fontWeight: "bold" }}
         color="black"
       >
-        Update Fuel Rate
+        Add Fuel Rate
       </DialogTitle>
 
       <DialogContent>
-
         <Box mt={2}>
-
-          {/* Fuel Type */}
-
           <TextField
             select
             fullWidth
@@ -97,55 +67,43 @@ console.log({
             onChange={(e) => setFuelId(e.target.value)}
             margin="normal"
           >
-            {fuelRates.map((fuel) => (
+            {fuels.map((fuel) => (
               <MenuItem
-                key={fuel.fuelId}
-                value={fuel.fuelId}
+                key={fuel.id}
+                value={fuel.id}
               >
                 {fuel.fuelName}
               </MenuItem>
             ))}
           </TextField>
 
-          {/* Rate */}
-
           <TextField
             fullWidth
             type="number"
-            label="Rate"
+            label="Initial Rate"
             value={rate}
             onChange={(e) => setRate(e.target.value)}
             margin="normal"
+            inputProps={{
+              min: 0,
+              step: "0.01",
+            }}
           />
-
         </Box>
-
       </DialogContent>
 
       <DialogActions>
-
-        <Button
-          onClick={handleCancel}
-        >
+        <Button onClick={handleCancel}>
           Cancel
         </Button>
 
         <Button
           variant="contained"
-          onClick={handleSubmit}
+          onClick={handleSave}
         >
-          Update
+          Save
         </Button>
-
       </DialogActions>
-
-      <AppSnackbar
-        open={snackbar.open}
-        message={snackbar.message}
-        severity={snackbar.severity}
-        onClose={handleCloseSnackbar}
-      />
-
     </Dialog>
   );
 }

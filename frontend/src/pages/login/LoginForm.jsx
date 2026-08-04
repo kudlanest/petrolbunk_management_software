@@ -323,7 +323,7 @@ export default function LoginForm() {
 
       <Typography
         align="center"
-        mt={8}
+        mt={3}
         color="#64748B"
         fontSize={13}
       >

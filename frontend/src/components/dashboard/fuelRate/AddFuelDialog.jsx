@@ -11,6 +11,8 @@ import {
   Typography,
 } from "@mui/material";
 
+import AppSnackbar from "../../common/AppSnackbar";
+
 export default function AddFuelDialog({
   open,
   onClose,
@@ -21,28 +23,81 @@ export default function AddFuelDialog({
   const [fuelName, setFuelName] = useState("");
   const [unitId, setUnitId] = useState("");
 
-  const handleSave = () => {
-    if (!fuelName.trim() || !unitId) {
-      alert("Please fill all fields");
-      return;
-    }
+  const [snackbar, setSnackbar] = useState({
+  open: false,
+  message: "",
+  severity: "success",
+});
 
-    onSave({
+const handleCloseSnackbar = () => {
+  setSnackbar((prev) => ({
+    ...prev,
+    open: false,
+  }));
+};
+
+  // const handleSave = () => {
+  //   if (!fuelName.trim() || !unitId) {
+  //     setSnackbar({
+  //   open: true,
+  //   message: "Please fill all fields.",
+  //   severity: "error",
+  // });
+  //     return;
+  //   }
+
+  //   onSave({
+  //     fuelName,
+  //     unitId,
+  //   });
+
+  //   setFuelName("");
+  //   setUnitId("");
+  //   onClose();
+  // };
+
+
+  const handleSave = async () => {
+  if (!fuelName.trim() || !unitId) {
+    setSnackbar({
+      open: true,
+      message: "Please fill all fields.",
+      severity: "error",
+    });
+    return;
+  }
+
+  try {
+    await onSave({
       fuelName,
       unitId,
     });
 
+    setSnackbar({
+      open: true,
+      message: "Fuel added successfully.",
+      severity: "success",
+    });
+
     setFuelName("");
     setUnitId("");
+
     onClose();
-  };
+  } catch (error) {
+    setSnackbar({
+      open: true,
+      message: "Failed to add fuel.",
+      severity: "error",
+    });
+  }
+};
 
   const handleCancel = () => {
     setFuelName("");
     setUnitId("");
     onClose();
   };
-
+// console.log("Units:", units);
   return (
     <Dialog
       open={open}
@@ -50,7 +105,7 @@ export default function AddFuelDialog({
       fullWidth
       maxWidth="sm"
     >
-      <DialogTitle>Add Fuel</DialogTitle>
+      <DialogTitle color="black">Add Fuel</DialogTitle>
 
       <DialogContent>
 
@@ -77,7 +132,7 @@ export default function AddFuelDialog({
                 key={unit.id}
                 value={unit.id}
               >
-                {unit.unitName}
+                {unit.name}
               </MenuItem>
             ))}
           </TextField>
@@ -112,6 +167,13 @@ export default function AddFuelDialog({
         </Button>
 
       </DialogActions>
+      <AppSnackbar
+  open={snackbar.open}
+  message={snackbar.message}
+  severity={snackbar.severity}
+  onClose={handleCloseSnackbar}
+/>
     </Dialog>
+    
   );
 }

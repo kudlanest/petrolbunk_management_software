@@ -7,32 +7,7 @@ export default function FuelRateCard({ fuel }) {
     // const [fuelRates, setFuelRates] = useState([]);
 //     const response = await fuelRateService.getAllFuelRates();
 // setFuelRates(response.data);
-    const fuelRates = [
-  {
-    id: 1,
-    fuelName: "Petrol",
-    rate: 104.5,
-    unit: "Litre",
-    updatedDate: "30 Jul 2026",
-    updatedTime: "10:45 AM",
-  },
-  {
-    id: 2,
-    fuelName: "Diesel",
-    rate: 94.3,
-    unit: "Litre",
-    updatedDate: "30 Jul 2026",
-    updatedTime: "10:45 AM",
-  },
-  {
-    id: 3,
-    fuelName: "Engine Oil",
-    rate: 420,
-    unit: "Litre",
-    updatedDate: "30 Jul 2026",
-    updatedTime: "10:45 AM",
-  },
-];
+   
 
   return (
     <Card

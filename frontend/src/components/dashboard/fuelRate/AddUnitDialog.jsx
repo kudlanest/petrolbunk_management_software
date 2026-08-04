@@ -51,7 +51,7 @@ export default function AddUnitDialog({
       maxWidth="xs"
     >
 
-      <DialogTitle>
+      <DialogTitle color="black">
         Add New Unit
       </DialogTitle>
 

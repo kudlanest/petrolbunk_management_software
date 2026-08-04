@@ -8,8 +8,8 @@ export const exportFuelRateHistoryExcel = (history) => {
     "Old Rate": item.oldRate,
     "New Rate": item.newRate,
     "Updated By": item.updatedBy,
-    Date: item.date,
-    Time: item.time,
+    Date: item.updatedDate,
+    Time: item.updatedTime,
   }));
 
   const worksheet = XLSX.utils.json_to_sheet(excelData);

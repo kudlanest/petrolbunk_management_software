@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 
 import {
   Dialog,
@@ -16,33 +16,52 @@ import {
   Stack,
 } from "@mui/material";
 
+import {getAllFuels} from "../../../services/fuelRate/fuelService";
+
 export default function UpdateStatusDialog({
   open,
   onClose,
+  onUpdate,
 }) {
 
+   const [fuelsList, setFuelsList] = useState([]);
   const [fuel, setFuel] = useState("");
 
   const [status, setStatus] = useState("ACTIVE");
 
-  const fuelList = [
-    "Petrol",
-    "Diesel",
-    "Engine Oil",
-    "Gas",
-  ];
 
-  const handleUpdate = () => {
+      useEffect(() => {
+      loadFuels();
+   
+  }, []);
 
-    console.log({
-      fuel,
-      status,
-    });
+  const loadFuels = async () => {
+      try {
+          const response = await getAllFuels();
+          setFuelsList(response.data);
+      } catch (error) {
+          console.error(error);
+      }
+  };
 
-    alert("Fuel status updated successfully.");
+
+const handleUpdate = async () => {
+  if (!fuel) {
+    alert("Please select a fuel.");
+    return;
+  }
+
+  try {
+    await onUpdate(fuel, status);
+
+    setFuel("");
+    setStatus("ACTIVE");
 
     onClose();
-  };
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   return (
 
@@ -53,7 +72,7 @@ export default function UpdateStatusDialog({
       maxWidth="sm"
     >
 
-      <DialogTitle>
+      <DialogTitle color="black">
         Update Fuel Status
       </DialogTitle>
 
@@ -68,25 +87,19 @@ export default function UpdateStatusDialog({
             </InputLabel>
 
             <Select
-              value={fuel}
-              label="Fuel Type"
-              onChange={(e) =>
-                setFuel(e.target.value)
-              }
-            >
-
-              {fuelList.map((item) => (
-
-                <MenuItem
-                  key={item}
-                  value={item}
-                >
-                  {item}
-                </MenuItem>
-
-              ))}
-
-            </Select>
+    value={fuel}
+    label="Fuel Type"
+    onChange={(e) => setFuel(e.target.value)}
+>
+    {fuelsList.map((item) => (
+        <MenuItem
+            key={item.id}
+            value={item.id}
+        >
+            {item.fuelName}
+        </MenuItem>
+    ))}
+</Select>
 
           </FormControl>
 

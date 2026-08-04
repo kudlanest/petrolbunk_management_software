@@ -2,6 +2,8 @@ import Grid from "@mui/material/Grid";
 import FuelRateCard from "./FuelRateCard";
 
 export default function FuelRateGrid({ fuelRates }) {
+
+  
   return (
     <Grid container spacing={3}>
       {fuelRates.map((fuel) => (
