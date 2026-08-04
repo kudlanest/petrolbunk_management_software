@@ -1,5 +1,6 @@
 package com.example.backend.dto.auth;
 
+import com.example.backend.enums.Role;
 
 public class LoginResponse {
 
@@ -8,11 +9,11 @@ public class LoginResponse {
     private String fullName;
     private String username;
     private String email;
-    private String role;
+    private Role role;
     private String token;
 
     public LoginResponse(Long id, String employeeId, String fullName, String username,
-                          String email, String role, String token) {
+                          String email, Role role, String token) {
         this.id = id;
         this.employeeId = employeeId;
         this.fullName = fullName;
@@ -42,7 +43,7 @@ public class LoginResponse {
         return email;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
@@ -60,7 +61,7 @@ public class LoginResponse {
         private String fullName;
         private String username;
         private String email;
-        private String role;
+        private Role role;
         private String token;
 
         public Builder id(Long id) {
@@ -88,7 +89,7 @@ public class LoginResponse {
             return this;
         }
 
-        public Builder role(String role) {
+        public Builder role(Role role) {
             this.role = role;
             return this;
         }

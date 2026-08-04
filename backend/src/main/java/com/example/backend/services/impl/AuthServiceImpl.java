@@ -17,21 +17,35 @@ import com.example.backend.exceptions.User.DuplicateUserException;
 import com.example.backend.repositories.UserRepository;
 import com.example.backend.services.AuthService;
 
+
+import com.example.backend.dto.auth.RegisterRequest;
+
+
+
 @Service
 public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+   
+    
+    
+    
+    
+    
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
 
     public AuthServiceImpl(AuthenticationManager authenticationManager,UserRepository userRepository,
-                       JwtService jwtService, PasswordEncoder passwordEncoder) {
+                       JwtService jwtService, PasswordEncoder passwordEncoder
+                       ) {
 
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.passwordEncoder = passwordEncoder;
+       
+        
     }
     
     @Override
@@ -66,6 +80,8 @@ public class AuthServiceImpl implements AuthService {
 
         return userRepository.save(user);
     }
+    
+   
 
  @Override
 public LoginResponse login(LoginRequest request) {
