@@ -39,13 +39,9 @@ const confirmDelete = () => {
     }
   }, [open]);
 
-//   const handleDelete = () => {
-//     if (!fuelId) return;
 
-//     onDelete(fuelId);
-//   };
 
-  console.log("Fuels in DeleteFuelDialog:", fuels);
+  // console.log("Fuels in DeleteFuelDialog:", fuels);
 
   return (
     <>

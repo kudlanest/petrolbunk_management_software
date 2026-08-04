@@ -39,11 +39,7 @@ export default function DeleteFuelDialog({
         }
     }, [open]);
 
-    //   const handleDelete = () => {
-    //     if (!unitId) return;
 
-    //     onDelete(unitId);
-    //   };
 
     //   console.log("units in DeleteFuelDialog:", units);
 

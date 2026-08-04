@@ -8,6 +8,7 @@ import DoneAllIcon from "@mui/icons-material/DoneAll";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import MoneyOffIcon from "@mui/icons-material/MoneyOff";
+import GroupAddIcon from "@mui/icons-material/GroupAdd";
 
 const SidebarMenu = [
 
@@ -69,7 +70,15 @@ const SidebarMenu = [
         title: "Amount Given",
         path: "/amount-given",
         icon: <MoneyOffIcon />
+    },
+
+    {
+        title: "Manage Employees",
+        path: "/manage-employees",
+        icon: <GroupAddIcon />
     }
+
+
 
 ];
 

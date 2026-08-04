@@ -48,10 +48,21 @@ public class OtpServiceImpl implements OtpService {
 
     @Override
     public boolean verifyOtp(String email, String otp, OtpPurpose purpose) {
+    	
+//        System.out.println("Entered Email   : " + email);
+//        System.out.println("Entered OTP     : '" + otp + "'");
+//        System.out.println("Purpose         : " + purpose);
+
+
 
         OtpVerification otpVerification = otpRepository
                 .findTopByEmailAndPurposeOrderByCreatedAtDesc(email, purpose)
                 .orElse(null);
+        
+//        System.out.println("DB OTP          : '" + otpVerification.getOtp() + "'");
+//        System.out.println("Verified        : " + otpVerification.isVerified());
+//        System.out.println("Expires At      : " + otpVerification.getExpiresAt());
+//        System.out.println("Current Time    : " + LocalDateTime.now());
 
         if (otpVerification == null) {
             return false;
@@ -60,7 +71,11 @@ public class OtpServiceImpl implements OtpService {
         if (!otpVerification.getOtp().equals(otp)) {
             return false;
         }
-
+//        System.out.println("OTP Match: " + otpVerification.getOtp().equals(otp));
+//
+//        if (!otpVerification.getOtp().trim().equals(otp.trim())) {
+//            return false;
+//        }
         if (otpVerification.isVerified()) {
             return false;
         }
@@ -68,6 +83,9 @@ public class OtpServiceImpl implements OtpService {
         if (otpVerification.getExpiresAt().isBefore(LocalDateTime.now())) {
             return false;
         }
+        
+        
+ 
 
         otpVerification.setVerified(true);
         otpRepository.save(otpVerification);

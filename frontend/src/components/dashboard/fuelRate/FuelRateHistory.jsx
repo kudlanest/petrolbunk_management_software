@@ -46,26 +46,6 @@ const [selectedDate, setSelectedDate] = useState(null);
 const printRef = useRef();
 const [refreshing, setRefreshing] = useState(false);
 
-// const history = [
-//   {
-//     id: 1,
-//     fuel: "Petrol",
-//     oldRate: 103.5,
-//     newRate: 104.5,
-//     updatedBy: "Admin",
-//     date: "2026-07-31",
-//     time: "10:30 AM",
-//   },
-//   {
-//     id: 2,
-//     fuel: "Diesel",
-//     oldRate: 94.3,
-//     newRate: 93.8,
-//     updatedBy: "Admin",
-//     date: "2026-07-31",
-//     time: "11:00 AM",
-//   },
-// ];
 
 const [history, setHistory] = useState([]);
 
@@ -113,15 +93,7 @@ const handlePrint = useReactToPrint({
   documentTitle: "Fuel Rate History",
 });
 
-// const handleRefresh = () => {
-//   // Reset filters
-//   setSearch("");
-//   setFuel("All");
-//   setSelectedDate(null);
 
-//    setTimeout(() => {
-//     setRefreshing(false);
-//   }, 600);
 
 const handleRefresh = async () => {
 
@@ -141,8 +113,7 @@ const handleRefresh = async () => {
 };
 
 
-  // Later when backend is connected:
-  // fetchFuelRateHistory();
+
 
 
   return (

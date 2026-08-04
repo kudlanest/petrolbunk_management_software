@@ -1,12 +1,15 @@
 package com.example.backend.services;
 
 import com.example.backend.dto.auth.ChangePasswordRequest;
+import com.example.backend.dto.auth.ChangeUsernameRequest;
 import com.example.backend.dto.auth.ForgotPasswordRequest;
 import com.example.backend.dto.auth.LoginRequest;
 import com.example.backend.dto.auth.LoginResponse;
 import com.example.backend.dto.auth.RegisterRequest;
 import com.example.backend.dto.auth.ResetPasswordRequest;
 import com.example.backend.dto.auth.VerifyChangePasswordRequest;
+import com.example.backend.dto.auth.VerifyChangeUsernameRequest;
+import com.example.backend.dto.auth.VerifyLoginOtpRequest;
 import com.example.backend.entities.User;
 
 public interface AuthService {
@@ -35,6 +38,21 @@ public interface AuthService {
     void changePassword(ChangePasswordRequest request);
 
     void verifyChangePassword(VerifyChangePasswordRequest request);
+    
+    
+    // Change Username or Update Username
+    void changeUsername(ChangeUsernameRequest request);
+
+    void verifyChangeUsername(VerifyChangeUsernameRequest request);
+    
+    
+    
+    // Login with OTP, JWTtoken generated only after verifying the OTP
+    void loginRequest(LoginRequest request);
+
+    LoginResponse verifyLoginOtp(VerifyLoginOtpRequest request);
+    
+    
 	
 
 

@@ -36,25 +36,7 @@ const handleCloseSnackbar = () => {
   }));
 };
 
-  // const handleSave = () => {
-  //   if (!fuelName.trim() || !unitId) {
-  //     setSnackbar({
-  //   open: true,
-  //   message: "Please fill all fields.",
-  //   severity: "error",
-  // });
-  //     return;
-  //   }
 
-  //   onSave({
-  //     fuelName,
-  //     unitId,
-  //   });
-
-  //   setFuelName("");
-  //   setUnitId("");
-  //   onClose();
-  // };
 
 
   const handleSave = async () => {

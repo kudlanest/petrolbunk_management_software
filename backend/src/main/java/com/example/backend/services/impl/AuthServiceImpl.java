@@ -14,22 +14,29 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.backend.config.JwtService;
 import com.example.backend.dto.auth.ChangePasswordRequest;
+import com.example.backend.dto.auth.ChangeUsernameRequest;
 import com.example.backend.dto.auth.ForgotPasswordRequest;
 import com.example.backend.dto.auth.LoginRequest;
 import com.example.backend.dto.auth.LoginResponse;
 import com.example.backend.entities.User;
+import com.example.backend.entities.otp.PendingLogin;
 import com.example.backend.entities.otp.PendingPasswordChange;
 import com.example.backend.entities.otp.PendingRegistration;
+import com.example.backend.entities.otp.PendingUsernameChange;
 import com.example.backend.enums.OtpPurpose;
 import com.example.backend.exceptions.User.DuplicateUserException;
 import com.example.backend.repositories.UserRepository;
+import com.example.backend.repositories.otp.PendingLoginRepository;
 import com.example.backend.repositories.otp.PendingPasswordChangeRepository;
 import com.example.backend.repositories.otp.PendingRegistrationRepository;
+import com.example.backend.repositories.otp.PendingUsernameChangeRepository;
 import com.example.backend.services.AuthService;
 import com.example.backend.services.otp.OtpService;
 import com.example.backend.dto.auth.RegisterRequest;
 import com.example.backend.dto.auth.ResetPasswordRequest;
 import com.example.backend.dto.auth.VerifyChangePasswordRequest;
+import com.example.backend.dto.auth.VerifyChangeUsernameRequest;
+import com.example.backend.dto.auth.VerifyLoginOtpRequest;
 
 
 
@@ -42,6 +49,8 @@ public class AuthServiceImpl implements AuthService {
     private final OtpService otpService;
     
     private final PendingPasswordChangeRepository pendingPasswordChangeRepository;
+    private final PendingUsernameChangeRepository pendingUsernameChangeRepository;
+    private final PendingLoginRepository pendingLoginRepository;
    
     
     
@@ -53,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
 
     public AuthServiceImpl(AuthenticationManager authenticationManager,UserRepository userRepository,
                        JwtService jwtService, PasswordEncoder passwordEncoder,PendingRegistrationRepository pendingRegistrationRepository,
-                       OtpService otpService,PendingPasswordChangeRepository pendingPasswordChangeRepository
+                       OtpService otpService,PendingPasswordChangeRepository pendingPasswordChangeRepository,PendingUsernameChangeRepository pendingUsernameChangeRepository,PendingLoginRepository pendingLoginRepository
                        ) {
 
         this.authenticationManager = authenticationManager;
@@ -63,6 +72,8 @@ public class AuthServiceImpl implements AuthService {
         this.pendingRegistrationRepository = pendingRegistrationRepository;
         this.otpService = otpService;
         this.pendingPasswordChangeRepository = pendingPasswordChangeRepository;
+        this.pendingUsernameChangeRepository = pendingUsernameChangeRepository;
+        this.pendingLoginRepository = pendingLoginRepository;
        
         
     }
@@ -311,5 +322,136 @@ public LoginResponse login(LoginRequest request) {
      userRepository.save(user);
 
      pendingPasswordChangeRepository.deleteByEmail(request.getEmail());
+ }
+ 
+ @Override
+ @Transactional
+ public void changeUsername(ChangeUsernameRequest request) {
+
+     User user = userRepository.findByEmail(request.getEmail())
+             .orElseThrow(() ->
+                     new RuntimeException("User not found"));
+
+     if (userRepository.existsByUsername(request.getNewUsername())) {
+         throw new DuplicateUserException("Username already exists");
+     }
+
+     // Remove any previous pending request
+     pendingUsernameChangeRepository.deleteByEmail(request.getEmail());
+
+     PendingUsernameChange pending = new PendingUsernameChange();
+
+     pending.setEmail(request.getEmail());
+     pending.setNewUsername(request.getNewUsername());
+     pending.setCreatedAt(LocalDateTime.now());
+
+     pendingUsernameChangeRepository.save(pending);
+
+     otpService.generateOtp(
+             request.getEmail(),
+             OtpPurpose.CHANGE_USERNAME
+     );
+ }
+ 
+ @Override
+ @Transactional
+ public void verifyChangeUsername(VerifyChangeUsernameRequest request) {
+
+     boolean validOtp = otpService.verifyOtp(
+             request.getEmail(),
+             request.getOtp(),
+             OtpPurpose.CHANGE_USERNAME
+     );
+
+     if (!validOtp) {
+         throw new RuntimeException("Invalid or expired OTP");
+     }
+
+     PendingUsernameChange pending = pendingUsernameChangeRepository
+             .findByEmail(request.getEmail())
+             .orElseThrow(() ->
+                     new RuntimeException("No pending username change found"));
+
+     User user = userRepository.findByEmail(request.getEmail())
+             .orElseThrow(() ->
+                     new RuntimeException("User not found"));
+
+     user.setUsername(pending.getNewUsername());
+
+     userRepository.save(user);
+
+     pendingUsernameChangeRepository.deleteByEmail(request.getEmail());
+ }
+ 
+ 
+ @Override
+ @Transactional
+ public void loginRequest(LoginRequest request) {
+
+     Authentication authentication = authenticationManager.authenticate(
+             new UsernamePasswordAuthenticationToken(
+                     request.getUsername(),
+                     request.getPassword()));
+
+     User user = userRepository.findByUsername(authentication.getName())
+             .orElseThrow(() -> new RuntimeException("User not found"));
+
+     pendingLoginRepository.deleteByEmail(user.getEmail());
+
+     PendingLogin pending = new PendingLogin();
+
+     pending.setEmail(user.getEmail());
+     pending.setCreatedAt(LocalDateTime.now());
+
+     pendingLoginRepository.save(pending);
+
+     otpService.generateOtp(
+             user.getEmail(),
+             OtpPurpose.LOGIN
+     );
+ }
+ 
+ @Override
+ @Transactional
+ public LoginResponse verifyLoginOtp(VerifyLoginOtpRequest request) {
+
+     boolean validOtp = otpService.verifyOtp(
+             request.getEmail(),
+             request.getOtp(),
+             OtpPurpose.LOGIN
+     );
+
+     if (!validOtp) {
+         throw new RuntimeException("Invalid or expired OTP");
+     }
+
+     PendingLogin pending = pendingLoginRepository
+             .findByEmail(request.getEmail())
+             .orElseThrow(() ->
+                     new RuntimeException("No pending login found"));
+
+     User user = userRepository.findByEmail(request.getEmail())
+             .orElseThrow(() ->
+                     new RuntimeException("User not found"));
+
+     UserDetails userDetails = org.springframework.security.core.userdetails.User
+             .withUsername(user.getUsername())
+             .password(user.getPassword())
+             .authorities(user.getRole().name())
+             .build();
+
+     String token = jwtService.generateToken(userDetails);
+
+     pendingLoginRepository.deleteByEmail(request.getEmail());
+
+     return LoginResponse.builder()
+             .id(user.getId())
+             .employeeId(user.getEmployeeId())
+             .fullName(user.getFullName())
+             .username(user.getUsername())
+             .email(user.getEmail())
+             .role(user.getRole())
+             .token(token)
+             .build();
  }
 }
