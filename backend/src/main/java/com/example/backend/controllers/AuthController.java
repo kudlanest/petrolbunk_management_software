@@ -6,8 +6,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.backend.dto.auth.ForgotPasswordRequest;
 import com.example.backend.dto.auth.LoginRequest;
 import com.example.backend.dto.auth.LoginResponse;
+import com.example.backend.dto.auth.RegisterRequest;
+import com.example.backend.dto.auth.ResetPasswordRequest;
+import com.example.backend.dto.auth.VerifyOtpRequest;
 import com.example.backend.dto.user.UserResponse;
 import com.example.backend.entities.User;
 import com.example.backend.services.AuthService;
@@ -28,15 +32,37 @@ public class AuthController {
     
     
     // Register a new user
+//    @PostMapping("/register")
+//    public ResponseEntity<UserResponse> registerUser(
+//            @Valid @RequestBody User user) {
+//
+//        User createdUser = authService.createUser(user);
+//
+//        return ResponseEntity
+//                .status(HttpStatus.CREATED)
+//                .body(UserResponse.fromEntity(createdUser));
+//    }
+    
     @PostMapping("/register")
-    public ResponseEntity<UserResponse> registerUser(
-            @Valid @RequestBody User user) {
+    public ResponseEntity<String> register(
+            @Valid @RequestBody RegisterRequest request) {
 
-        User createdUser = authService.createUser(user);
+        authService.registerRequest(request);
+
+        return ResponseEntity.ok("OTP sent successfully to your email.");
+    }
+    
+    @PostMapping("/verify-registration")
+    public ResponseEntity<UserResponse> verifyRegistration(
+            @Valid @RequestBody VerifyOtpRequest request) {
+
+        User user = authService.verifyRegistration(
+                request.getEmail(),
+                request.getOtp());
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(UserResponse.fromEntity(createdUser));
+                .body(UserResponse.fromEntity(user));
     }
     
     
@@ -61,6 +87,23 @@ public class AuthController {
     
     
     
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequest request) {
+
+        authService.forgotPassword(request);
+
+        return ResponseEntity.ok("OTP sent successfully.");
+    }
+    
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(
+            @Valid @RequestBody ResetPasswordRequest request) {
+
+        authService.resetPassword(request);
+
+        return ResponseEntity.ok("Password reset successfully.");
+    }
     
     // forgot password
     // reset password
