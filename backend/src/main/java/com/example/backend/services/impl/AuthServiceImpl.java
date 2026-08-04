@@ -13,19 +13,23 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.backend.config.JwtService;
+import com.example.backend.dto.auth.ChangePasswordRequest;
 import com.example.backend.dto.auth.ForgotPasswordRequest;
 import com.example.backend.dto.auth.LoginRequest;
 import com.example.backend.dto.auth.LoginResponse;
 import com.example.backend.entities.User;
+import com.example.backend.entities.otp.PendingPasswordChange;
 import com.example.backend.entities.otp.PendingRegistration;
 import com.example.backend.enums.OtpPurpose;
 import com.example.backend.exceptions.User.DuplicateUserException;
 import com.example.backend.repositories.UserRepository;
+import com.example.backend.repositories.otp.PendingPasswordChangeRepository;
 import com.example.backend.repositories.otp.PendingRegistrationRepository;
 import com.example.backend.services.AuthService;
 import com.example.backend.services.otp.OtpService;
 import com.example.backend.dto.auth.RegisterRequest;
 import com.example.backend.dto.auth.ResetPasswordRequest;
+import com.example.backend.dto.auth.VerifyChangePasswordRequest;
 
 
 
@@ -36,6 +40,8 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PendingRegistrationRepository pendingRegistrationRepository;
     private final OtpService otpService;
+    
+    private final PendingPasswordChangeRepository pendingPasswordChangeRepository;
    
     
     
@@ -47,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
 
     public AuthServiceImpl(AuthenticationManager authenticationManager,UserRepository userRepository,
                        JwtService jwtService, PasswordEncoder passwordEncoder,PendingRegistrationRepository pendingRegistrationRepository,
-                       OtpService otpService
+                       OtpService otpService,PendingPasswordChangeRepository pendingPasswordChangeRepository
                        ) {
 
         this.authenticationManager = authenticationManager;
@@ -56,6 +62,7 @@ public class AuthServiceImpl implements AuthService {
         this.passwordEncoder = passwordEncoder;
         this.pendingRegistrationRepository = pendingRegistrationRepository;
         this.otpService = otpService;
+        this.pendingPasswordChangeRepository = pendingPasswordChangeRepository;
        
         
     }
@@ -240,5 +247,69 @@ public LoginResponse login(LoginRequest request) {
      user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
      userRepository.save(user);
+ }
+ 
+ @Override
+ @Transactional
+ public void changePassword(ChangePasswordRequest request) {
+
+     User user = userRepository.findByEmail(request.getEmail())
+             .orElseThrow(() ->
+                     new RuntimeException("User not found"));
+
+     if (!passwordEncoder.matches(
+             request.getCurrentPassword(),
+             user.getPassword())) {
+
+         throw new RuntimeException("Current password is incorrect");
+     }
+
+     pendingPasswordChangeRepository
+             .deleteByEmail(request.getEmail());
+
+     PendingPasswordChange pending = new PendingPasswordChange();
+
+     pending.setEmail(request.getEmail());
+     pending.setEncodedPassword(
+             passwordEncoder.encode(request.getNewPassword()));
+     pending.setCreatedAt(LocalDateTime.now());
+
+     pendingPasswordChangeRepository.save(pending);
+
+     otpService.generateOtp(
+             request.getEmail(),
+             OtpPurpose.CHANGE_PASSWORD
+     );
+ }
+ 
+ 
+ @Override
+ @Transactional
+ public void verifyChangePassword(VerifyChangePasswordRequest request) {
+
+     boolean validOtp = otpService.verifyOtp(
+             request.getEmail(),
+             request.getOtp(),
+             OtpPurpose.CHANGE_PASSWORD
+     );
+
+     if (!validOtp) {
+         throw new RuntimeException("Invalid or expired OTP");
+     }
+
+     PendingPasswordChange pending = pendingPasswordChangeRepository
+             .findByEmail(request.getEmail())
+             .orElseThrow(() ->
+                     new RuntimeException("No pending password change found"));
+
+     User user = userRepository.findByEmail(request.getEmail())
+             .orElseThrow(() ->
+                     new RuntimeException("User not found"));
+
+     user.setPassword(pending.getEncodedPassword());
+
+     userRepository.save(user);
+
+     pendingPasswordChangeRepository.deleteByEmail(request.getEmail());
  }
 }

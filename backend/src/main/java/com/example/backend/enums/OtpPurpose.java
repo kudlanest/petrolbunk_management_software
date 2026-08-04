@@ -4,6 +4,7 @@ public enum OtpPurpose {
 
     REGISTRATION,
     FORGOT_PASSWORD,
-    CHANGE_USERNAME
+    CHANGE_USERNAME,
+    CHANGE_PASSWORD
 
 }

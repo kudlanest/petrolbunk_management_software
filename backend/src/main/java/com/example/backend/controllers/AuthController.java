@@ -6,11 +6,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.backend.dto.auth.ChangePasswordRequest;
 import com.example.backend.dto.auth.ForgotPasswordRequest;
 import com.example.backend.dto.auth.LoginRequest;
 import com.example.backend.dto.auth.LoginResponse;
 import com.example.backend.dto.auth.RegisterRequest;
 import com.example.backend.dto.auth.ResetPasswordRequest;
+import com.example.backend.dto.auth.VerifyChangePasswordRequest;
 import com.example.backend.dto.auth.VerifyOtpRequest;
 import com.example.backend.dto.user.UserResponse;
 import com.example.backend.entities.User;
@@ -105,9 +107,25 @@ public class AuthController {
         return ResponseEntity.ok("Password reset successfully.");
     }
     
-    // forgot password
-    // reset password
-    // change password
+    @PostMapping("/change-password/request")
+    public ResponseEntity<String> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request) {
+
+        authService.changePassword(request);
+
+        return ResponseEntity.ok("OTP sent successfully.");
+    }
+    
+    @PostMapping("/change-password/verify")
+    public ResponseEntity<String> verifyChangePassword(
+            @Valid @RequestBody VerifyChangePasswordRequest request) {
+
+        authService.verifyChangePassword(request);
+
+        return ResponseEntity.ok("Password changed successfully.");
+    }
+  
+
     //refresh token
     
     

@@ -1,4 +1,4 @@
-id
+id 
 fuel name/fuel type
 rate
 unit
@@ -13,3 +13,5 @@ logic for : total updates till now
             todays update count
             highest rate
             lowest rate
+
+
