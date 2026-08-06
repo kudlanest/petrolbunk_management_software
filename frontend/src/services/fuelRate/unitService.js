@@ -1,11 +1,11 @@
-import api from "../api"
+import privateApi from "../privateApi";
 
 export const getAllUnits = () =>
-  api.get("/units");
+  privateApi.get("/units");
 
 export const addUnit = (data) =>
-  api.post("/units", data);
+  privateApi.post("/units", data);
 
 export const deleteUnit = (unitId) => {
-  return api.delete(`/units/${unitId}`);
+  return privateApi.delete(`/units/${unitId}`);
 };

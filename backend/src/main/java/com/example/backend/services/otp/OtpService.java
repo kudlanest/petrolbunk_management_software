@@ -14,5 +14,10 @@ public interface OtpService {
             String otp,
             OtpPurpose purpose
     );
+    
+    void resendOtp(
+            String email,
+            OtpPurpose purpose
+    );
 
 }

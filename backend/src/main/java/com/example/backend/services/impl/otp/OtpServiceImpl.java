@@ -92,4 +92,22 @@ public class OtpServiceImpl implements OtpService {
 
         return true;
     }
+    
+    @Override
+    @Transactional
+    public void resendOtp(String email, OtpPurpose purpose) {
+
+        OtpVerification latestOtp = otpRepository
+                .findTopByEmailAndPurposeOrderByCreatedAtDesc(email, purpose)
+                .orElse(null);
+
+        if (latestOtp != null &&
+            latestOtp.getCreatedAt().plusSeconds(60).isAfter(LocalDateTime.now())) {
+
+            throw new RuntimeException(
+                    "Please wait 60 seconds before requesting another OTP.");
+        }
+
+        generateOtp(email, purpose);
+    }
 }

@@ -13,7 +13,9 @@ import LockIcon from "@mui/icons-material/Lock";
 import LogoutIcon from "@mui/icons-material/Logout";
 
 import { useNavigate } from "react-router-dom";
-import api from "../../../services/api";
+// import api from "../../../services/api";
+
+import privateApi from "../../../services/privateApi";
 
 export default function UserMenu() {
 
@@ -36,12 +38,13 @@ export default function UserMenu() {
 
   const handleLogout = async () => {
   try {
-    await api.post("/auth/logout");
+    await privateApi.post("/auth/logout");
   } catch (error) {
     console.error(error);
   } finally {
     // Remove stored data
-    localStorage.removeItem("token");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     localStorage.removeItem("user");
 
     // Close menu

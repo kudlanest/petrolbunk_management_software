@@ -4,6 +4,8 @@ import Welcome from "../pages/welcome/Welcome";
 import Login from "../pages/login/Login";
 import Register from "../pages/register/Register";
 import OTPVerification from "../pages/otp/OTPVerification";
+import ForgotPassword from "../pages/forgotPassword/ForgotPassword";
+import ResetPassword from "../pages/resetPassword/ResetPassword";
 
 
 // Layout
@@ -28,6 +30,16 @@ export default function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/otp-verification" element={<OTPVerification />} />
+
+      <Route
+        path="/forgot-password"
+        element={<ForgotPassword />}
+      />
+
+      <Route
+    path="/reset-password"
+    element={<ResetPassword />}
+/>
 
       {/* Dashboard Layout */}
       <Route path="/dashboard" element={

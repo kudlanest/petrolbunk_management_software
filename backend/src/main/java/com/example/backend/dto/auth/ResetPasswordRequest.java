@@ -7,8 +7,8 @@ public class ResetPasswordRequest {
     @NotBlank
     private String email;
 
-    @NotBlank
-    private String otp;
+//    @NotBlank
+//    private String otp;
 
     @NotBlank
     private String newPassword;
@@ -24,13 +24,13 @@ public class ResetPasswordRequest {
         this.email = email;
     }
 
-    public String getOtp() {
-        return otp;
-    }
-
-    public void setOtp(String otp) {
-        this.otp = otp;
-    }
+//    public String getOtp() {
+//        return otp;
+//    }
+//
+//    public void setOtp(String otp) {
+//        this.otp = otp;
+//    }
 
     public String getNewPassword() {
         return newPassword;

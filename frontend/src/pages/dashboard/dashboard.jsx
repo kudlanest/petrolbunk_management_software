@@ -1,4 +1,5 @@
 import { Typography, Box } from "@mui/material";
+import { INFO_MESSAGES } from "../../constants/message";
 
 export default function Dashboard() {
   return (
@@ -15,7 +16,7 @@ export default function Dashboard() {
         color="#CBD5E1"
         mt={2}
       >
-        Welcome to Petrol Bunk Management System.
+        Welcome to {INFO_MESSAGES.PROJECT_NAME}.
       </Typography>
     </Box>
   );

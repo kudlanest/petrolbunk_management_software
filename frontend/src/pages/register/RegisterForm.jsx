@@ -29,23 +29,30 @@ import { useFormik } from "formik";
 import { useNavigate } from "react-router-dom";
 
 import registerValidation from "../../validations/registerValidation";
-import API_BASE_URL from "../../config/api";
+
+import { registerUser } from "../../services/auth/authService";
+
+import {SUCCESS_MESSAGES,ERROR_MESSAGES,INFO_MESSAGES} from "../../constants/message";
+
+import AppSnackbar from "../../components/common/AppSnackbar"; //Step 1: Import the AppSnackbar component
+
 
 export default function RegisterForm({ onSuccess }) {
 
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  // Toast state
-  const [toast, setToast] = useState({
+  const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
-    severity: "success", // "success" | "error"
+    severity: "success",
   });
-
-  const handleCloseToast = (event, reason) => {
-    if (reason === "clickaway") return;
-    setToast((prev) => ({ ...prev, open: false }));
+  
+  const handleCloseSnackbar = () => {
+    setSnackbar((prev) => ({
+      ...prev,
+      open: false,
+    }));
   };
 
   const formik = useFormik({
@@ -75,13 +82,14 @@ export default function RegisterForm({ onSuccess }) {
       //save the data in database
       const { confirmPassword, terms, ...userData } = values;
 
-      axios.post(`${API_BASE_URL}/auth/register`, userData)
+       registerUser(userData)
         .then((response) => {
           console.log("User registered successfully:", response.data);
 
-          setToast({
+
+          setSnackbar({
             open: true,
-            message: "Account created successfully!",
+            message: SUCCESS_MESSAGES.REGISTER_OTP_SENT,
             severity: "success",
           });
 
@@ -90,8 +98,15 @@ export default function RegisterForm({ onSuccess }) {
 
           // slight delay so the toast is visible before navigating away
           setTimeout(() => {
-            navigate("/otp-verification");
+            navigate("/otp-verification", {
+    state: {
+        from: "register",
+        email: values.email
+    }
+});
           }, 1200);
+
+
         })
         .catch((error) => {
           console.error("Error registering user:", error);
@@ -104,11 +119,12 @@ export default function RegisterForm({ onSuccess }) {
             formik.setFieldTouched(errData.field, true, false);
           }
 
-          setToast({
+
+
+          setSnackbar({
             open: true,
-            message:
-              errData?.message ||
-              (typeof errData === "string" ? errData : "Registration failed. Please try again."),
+            message:  errData?.message ||
+              (typeof errData === "string" ? errData : ERROR_MESSAGES.REGISTRATION_FAILED),
             severity: "error",
           });
 
@@ -208,7 +224,7 @@ export default function RegisterForm({ onSuccess }) {
             color="#CBD5E1"
             mb={4}
           >
-            Petrol Bunk Management System
+            {INFO_MESSAGES.PROJECT_NAME}
           </Typography>
 
           <form onSubmit={formik.handleSubmit}>
@@ -697,7 +713,7 @@ export default function RegisterForm({ onSuccess }) {
 
                       <Typography color="#CBD5E1">
 
-                        I agree to the Terms & Conditions
+                        {INFO_MESSAGES.TERMS_AND_CONDITIONS}
 
                       </Typography>
 
@@ -807,23 +823,13 @@ export default function RegisterForm({ onSuccess }) {
         </Paper>
 
       </Box>
+                  <AppSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={handleCloseSnackbar}
+      />
 
-      {/* Toast Notification */}
-      <Snackbar
-        open={toast.open}
-        autoHideDuration={4000}
-        onClose={handleCloseToast}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert
-          onClose={handleCloseToast}
-          severity={toast.severity}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {toast.message}
-        </Alert>
-      </Snackbar>
     </>
   );
 

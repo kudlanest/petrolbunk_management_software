@@ -9,7 +9,7 @@ import FloatingIcons from "./FloatingIcons";
 import FuelLoader from "./FuelLoader";
 import LoadingMessages from "./LoadingMessages";
 
-const PETROL_BUNK_NAME = "HP PETROL BUNK ";
+import {INFO_MESSAGES} from "../../constants/message";
 
 export default function Welcome() {
   const navigate = useNavigate();
@@ -154,7 +154,7 @@ export default function Welcome() {
                       "0 0 35px rgba(56,189,248,.6)",
                   }}
                 >
-                  {PETROL_BUNK_NAME}
+                  {INFO_MESSAGES.PETROL_BUNK_NAME}
                 </motion.h1>
 
                 <Typography
@@ -164,7 +164,7 @@ export default function Welcome() {
                     fontSize: 18,
                   }}
                 >
-                  Petrol Bunk Management System
+                 {INFO_MESSAGES.PROJECT_NAME}
                 </Typography>
 
                 <Box mt={5}>

@@ -9,12 +9,17 @@ import org.springframework.web.bind.annotation.*;
 import com.example.backend.dto.auth.ChangePasswordRequest;
 import com.example.backend.dto.auth.ChangeUsernameRequest;
 import com.example.backend.dto.auth.ForgotPasswordRequest;
+import com.example.backend.dto.auth.InitialLoginResponse;
 import com.example.backend.dto.auth.LoginRequest;
 import com.example.backend.dto.auth.LoginResponse;
+import com.example.backend.dto.auth.RefreshTokenRequest;
+import com.example.backend.dto.auth.RefreshTokenResponse;
 import com.example.backend.dto.auth.RegisterRequest;
+import com.example.backend.dto.auth.ResendOtpRequest;
 import com.example.backend.dto.auth.ResetPasswordRequest;
 import com.example.backend.dto.auth.VerifyChangePasswordRequest;
 import com.example.backend.dto.auth.VerifyChangeUsernameRequest;
+import com.example.backend.dto.auth.VerifyForgotPasswordOtpRequest;
 import com.example.backend.dto.auth.VerifyLoginOtpRequest;
 import com.example.backend.dto.auth.VerifyOtpRequest;
 import com.example.backend.dto.user.UserResponse;
@@ -103,6 +108,19 @@ public class AuthController {
         return ResponseEntity.ok("OTP sent successfully.");
     }
     
+    
+    // Verify the OTP for forgot password and allow the user to reset their password
+    @PostMapping("/verify-forgot-password-otp")
+    public ResponseEntity<String> verifyForgotPasswordOtp(
+            @Valid @RequestBody VerifyForgotPasswordOtpRequest request) {
+
+        authService.verifyForgotPasswordOtp(request);
+
+        return ResponseEntity.ok("OTP verified successfully.");
+    }
+    
+    
+    // Reset the user's password after verifying the OTP
     @PostMapping("/reset-password")
     public ResponseEntity<String> resetPassword(
             @Valid @RequestBody ResetPasswordRequest request) {
@@ -151,13 +169,27 @@ public class AuthController {
         return ResponseEntity.ok("Username changed successfully.");
     }
 
+//    @PostMapping("/login")
+//    public ResponseEntity<String> login(
+//            @Valid @RequestBody LoginRequest request) {
+//
+//        authService.loginRequest(request);
+//
+//        return ResponseEntity.ok("OTP sent successfully.");
+//    }
+    
     @PostMapping("/login")
-    public ResponseEntity<String> login(
+    public ResponseEntity<InitialLoginResponse> login(
             @Valid @RequestBody LoginRequest request) {
 
-        authService.loginRequest(request);
+        String email = authService.loginRequest(request);
 
-        return ResponseEntity.ok("OTP sent successfully.");
+        return ResponseEntity.ok(
+                new InitialLoginResponse(
+                        "OTP sent successfully.",
+                        email
+                )
+        );
     }
     
     @PostMapping("/login/verify")
@@ -166,6 +198,24 @@ public class AuthController {
 
         return ResponseEntity.ok(
                 authService.verifyLoginOtp(request)
+        );
+    }
+    
+    @PostMapping("/resend-otp")
+    public ResponseEntity<String> resendOtp(
+            @Valid @RequestBody ResendOtpRequest request) {
+
+        authService.resendOtp(request);
+
+        return ResponseEntity.ok("OTP sent successfully.");
+    }
+    
+    @PostMapping("/refresh-token")
+    public ResponseEntity<RefreshTokenResponse> refreshToken(
+            @Valid @RequestBody RefreshTokenRequest request) {
+
+        return ResponseEntity.ok(
+                authService.refreshToken(request)
         );
     }
     

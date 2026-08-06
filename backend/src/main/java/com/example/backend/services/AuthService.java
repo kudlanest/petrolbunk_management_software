@@ -5,10 +5,14 @@ import com.example.backend.dto.auth.ChangeUsernameRequest;
 import com.example.backend.dto.auth.ForgotPasswordRequest;
 import com.example.backend.dto.auth.LoginRequest;
 import com.example.backend.dto.auth.LoginResponse;
+import com.example.backend.dto.auth.RefreshTokenRequest;
+import com.example.backend.dto.auth.RefreshTokenResponse;
 import com.example.backend.dto.auth.RegisterRequest;
+import com.example.backend.dto.auth.ResendOtpRequest;
 import com.example.backend.dto.auth.ResetPasswordRequest;
 import com.example.backend.dto.auth.VerifyChangePasswordRequest;
 import com.example.backend.dto.auth.VerifyChangeUsernameRequest;
+import com.example.backend.dto.auth.VerifyForgotPasswordOtpRequest;
 import com.example.backend.dto.auth.VerifyLoginOtpRequest;
 import com.example.backend.entities.User;
 
@@ -30,7 +34,9 @@ public interface AuthService {
     
     // Forgot Password
     void forgotPassword(ForgotPasswordRequest request);
-
+    void verifyForgotPasswordOtp(
+            VerifyForgotPasswordOtpRequest request
+    );
     void resetPassword(ResetPasswordRequest request);
     
     
@@ -48,11 +54,17 @@ public interface AuthService {
     
     
     // Login with OTP, JWTtoken generated only after verifying the OTP
-    void loginRequest(LoginRequest request);
+    String loginRequest(LoginRequest request);
 
     LoginResponse verifyLoginOtp(VerifyLoginOtpRequest request);
     
+    // Resend OTP for registration, forgot password, change password, change username, and login
+    void resendOtp(ResendOtpRequest request);
     
+    //Refresh Token
+    RefreshTokenResponse refreshToken(
+            RefreshTokenRequest request
+    );
 	
 
 

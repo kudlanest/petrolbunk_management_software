@@ -1,14 +1,14 @@
-import api from "../api"
+import privateApi from "../privateApi";
 
 export const getAllFuels = () =>
-  api.get("/fuels");
+  privateApi.get("/fuels");
 
 export const addFuel = (data) =>
-  api.post("/fuels", data);
+  privateApi.post("/fuels", data);
 
 export const updateFuelStatus = (id, status) =>
-  api.patch(`/fuels/${id}/status?status=${status}`);
+  privateApi.patch(`/fuels/${id}/status?status=${status}`);
 
 export const deleteFuel = (fuelId) => {
-  return api.delete(`/fuels/${fuelId}`);
+  return privateApi.delete(`/fuels/${fuelId}`);
 };

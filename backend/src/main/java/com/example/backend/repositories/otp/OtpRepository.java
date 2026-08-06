@@ -26,5 +26,6 @@ public interface OtpRepository extends JpaRepository<OtpVerification, Long> {
             String email,
             OtpPurpose purpose
     );
-
+    
+ 
 }

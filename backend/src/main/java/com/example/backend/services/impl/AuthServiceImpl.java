@@ -18,6 +18,10 @@ import com.example.backend.dto.auth.ChangeUsernameRequest;
 import com.example.backend.dto.auth.ForgotPasswordRequest;
 import com.example.backend.dto.auth.LoginRequest;
 import com.example.backend.dto.auth.LoginResponse;
+import com.example.backend.dto.auth.RefreshTokenRequest;
+import com.example.backend.dto.auth.RefreshTokenResponse;
+import com.example.backend.entities.PendingPasswordReset;
+import com.example.backend.entities.RefreshToken;
 import com.example.backend.entities.User;
 import com.example.backend.entities.otp.PendingLogin;
 import com.example.backend.entities.otp.PendingPasswordChange;
@@ -25,17 +29,21 @@ import com.example.backend.entities.otp.PendingRegistration;
 import com.example.backend.entities.otp.PendingUsernameChange;
 import com.example.backend.enums.OtpPurpose;
 import com.example.backend.exceptions.User.DuplicateUserException;
+import com.example.backend.repositories.PendingPasswordResetRepository;
 import com.example.backend.repositories.UserRepository;
 import com.example.backend.repositories.otp.PendingLoginRepository;
 import com.example.backend.repositories.otp.PendingPasswordChangeRepository;
 import com.example.backend.repositories.otp.PendingRegistrationRepository;
 import com.example.backend.repositories.otp.PendingUsernameChangeRepository;
 import com.example.backend.services.AuthService;
+import com.example.backend.services.RefreshTokenService;
 import com.example.backend.services.otp.OtpService;
 import com.example.backend.dto.auth.RegisterRequest;
+import com.example.backend.dto.auth.ResendOtpRequest;
 import com.example.backend.dto.auth.ResetPasswordRequest;
 import com.example.backend.dto.auth.VerifyChangePasswordRequest;
 import com.example.backend.dto.auth.VerifyChangeUsernameRequest;
+import com.example.backend.dto.auth.VerifyForgotPasswordOtpRequest;
 import com.example.backend.dto.auth.VerifyLoginOtpRequest;
 
 
@@ -51,6 +59,9 @@ public class AuthServiceImpl implements AuthService {
     private final PendingPasswordChangeRepository pendingPasswordChangeRepository;
     private final PendingUsernameChangeRepository pendingUsernameChangeRepository;
     private final PendingLoginRepository pendingLoginRepository;
+    private final PendingPasswordResetRepository pendingPasswordResetRepository;
+    
+    private final RefreshTokenService refreshTokenService;
    
     
     
@@ -63,7 +74,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthServiceImpl(AuthenticationManager authenticationManager,UserRepository userRepository,
                        JwtService jwtService, PasswordEncoder passwordEncoder,PendingRegistrationRepository pendingRegistrationRepository,
                        OtpService otpService,PendingPasswordChangeRepository pendingPasswordChangeRepository,PendingUsernameChangeRepository pendingUsernameChangeRepository,PendingLoginRepository pendingLoginRepository
-                       ) {
+                       ,RefreshTokenService refreshTokenService,PendingPasswordResetRepository pendingPasswordResetRepository) {
 
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
@@ -74,6 +85,8 @@ public class AuthServiceImpl implements AuthService {
         this.pendingPasswordChangeRepository = pendingPasswordChangeRepository;
         this.pendingUsernameChangeRepository = pendingUsernameChangeRepository;
         this.pendingLoginRepository = pendingLoginRepository;
+        this.refreshTokenService = refreshTokenService;
+        this.pendingPasswordResetRepository = pendingPasswordResetRepository;
        
         
     }
@@ -200,31 +213,60 @@ public class AuthServiceImpl implements AuthService {
     }
    
 
- @Override
-public LoginResponse login(LoginRequest request) {
-
-    Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                    request.getUsername(),
-                    request.getPassword()));
-
-    User user = userRepository.findByUsername(authentication.getName())
-            .orElseThrow(() -> new RuntimeException("User not found"));
-
-    String token = jwtService.generateToken(
-            (UserDetails) authentication.getPrincipal());
-
-    return LoginResponse.builder()
-            .id(user.getId())
-            .employeeId(user.getEmployeeId())
-            .fullName(user.getFullName())
-            .username(user.getUsername())
-            .email(user.getEmail())
-            .role(user.getRole())
-            .token(token)
-            .build();
-}
+// @Override
+//public LoginResponse login(LoginRequest request) {
+//
+//    Authentication authentication = authenticationManager.authenticate(
+//            new UsernamePasswordAuthenticationToken(
+//                    request.getUsername(),
+//                    request.getPassword()));
+//
+//    User user = userRepository.findByUsername(authentication.getName())
+//            .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//    String token = jwtService.generateToken(
+//            (UserDetails) authentication.getPrincipal());
+//
+//    return LoginResponse.builder()
+//            .id(user.getId())
+//            .employeeId(user.getEmployeeId())
+//            .fullName(user.getFullName())
+//            .username(user.getUsername())
+//            .email(user.getEmail())
+//            .role(user.getRole())
+//            .token(token)
+//            .build();
+//}
  
+    @Override
+    public LoginResponse login(LoginRequest request) {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword()));
+
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        String accessToken = jwtService.generateToken(
+                (UserDetails) authentication.getPrincipal());
+
+        RefreshToken refreshToken =
+                refreshTokenService.createRefreshToken(user);
+
+        return LoginResponse.builder()
+                .id(user.getId())
+                .employeeId(user.getEmployeeId())
+                .fullName(user.getFullName())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken.getToken())
+                .build();
+    }
+    
  @Override
  public void forgotPassword(ForgotPasswordRequest request) {
 
@@ -238,26 +280,92 @@ public LoginResponse login(LoginRequest request) {
      );
  }
  
+// @Override
+// public void verifyForgotPasswordOtp(
+//         VerifyForgotPasswordOtpRequest request) {
+//
+//     boolean valid = otpService.verifyOtp(
+//             request.getEmail(),
+//             request.getOtp(),
+//             OtpPurpose.FORGOT_PASSWORD
+//     );
+//
+//     if (!valid) {
+//         throw new RuntimeException("Invalid OTP");
+//     }
+// }
+// 
+ 
  @Override
- public void resetPassword(ResetPasswordRequest request) {
+ public void verifyForgotPasswordOtp(
+         VerifyForgotPasswordOtpRequest request) {
 
-     boolean validOtp = otpService.verifyOtp(
+     boolean valid = otpService.verifyOtp(
              request.getEmail(),
              request.getOtp(),
              OtpPurpose.FORGOT_PASSWORD
      );
 
-     if (!validOtp) {
-         throw new RuntimeException("Invalid or expired OTP");
+     if (!valid) {
+         throw new RuntimeException("Invalid OTP");
      }
 
+     // Remove any previous pending record
+     pendingPasswordResetRepository.deleteByEmail(request.getEmail());
+
+     // Create a new pending password reset record
+     PendingPasswordReset pending = new PendingPasswordReset();
+
+     pending.setEmail(request.getEmail());
+     pending.setCreatedAt(LocalDateTime.now());
+
+     pendingPasswordResetRepository.save(pending);
+ }
+ 
+// @Override
+// public void resetPassword(ResetPasswordRequest request) {
+//
+////     boolean validOtp = otpService.verifyOtp(
+////             request.getEmail(),
+////             request.getOtp(),
+////             OtpPurpose.FORGOT_PASSWORD
+////     );
+//
+////     if (!validOtp) {
+////         throw new RuntimeException("Invalid or expired OTP");
+////     }
+//
+//     User user = userRepository.findByEmail(request.getEmail())
+//             .orElseThrow(() ->
+//                     new RuntimeException("User not found"));
+//
+//     user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+//
+//     userRepository.save(user);
+// }
+ 
+ @Override
+ @Transactional
+ public void resetPassword(ResetPasswordRequest request) {
+
+     // Check if the user has already verified the OTP
+     PendingPasswordReset pending = pendingPasswordResetRepository
+             .findByEmail(request.getEmail())
+             .orElseThrow(() ->
+                     new RuntimeException("OTP verification required"));
+
+     // Find the user
      User user = userRepository.findByEmail(request.getEmail())
              .orElseThrow(() ->
                      new RuntimeException("User not found"));
 
+     // Update password
      user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
      userRepository.save(user);
+
+     // Remove the pending verification record
+     pendingPasswordResetRepository.deleteByEmail(request.getEmail());
  }
  
  @Override
@@ -386,7 +494,7 @@ public LoginResponse login(LoginRequest request) {
  
  @Override
  @Transactional
- public void loginRequest(LoginRequest request) {
+ public String loginRequest(LoginRequest request) {
 
      Authentication authentication = authenticationManager.authenticate(
              new UsernamePasswordAuthenticationToken(
@@ -409,6 +517,9 @@ public LoginResponse login(LoginRequest request) {
              user.getEmail(),
              OtpPurpose.LOGIN
      );
+     
+  // Return email
+     return user.getEmail();
  }
  
  @Override
@@ -440,7 +551,10 @@ public LoginResponse login(LoginRequest request) {
              .authorities(user.getRole().name())
              .build();
 
-     String token = jwtService.generateToken(userDetails);
+     String accessToken = jwtService.generateToken(userDetails);
+
+     RefreshToken refreshToken =
+             refreshTokenService.createRefreshToken(user);
 
      pendingLoginRepository.deleteByEmail(request.getEmail());
 
@@ -451,7 +565,45 @@ public LoginResponse login(LoginRequest request) {
              .username(user.getUsername())
              .email(user.getEmail())
              .role(user.getRole())
-             .token(token)
+             .accessToken(accessToken)
+             .refreshToken(refreshToken.getToken())
              .build();
+ }
+ 
+ @Override
+ @Transactional
+ public void resendOtp(ResendOtpRequest request) {
+
+//     otpService.generateOtp(
+//             request.getEmail(),
+//             request.getPurpose()
+//     );
+	 
+	 otpService.resendOtp(
+		        request.getEmail(),
+		        request.getPurpose()
+		);
+ }
+ 
+ 
+ @Override
+ public RefreshTokenResponse refreshToken(
+         RefreshTokenRequest request) {
+
+     RefreshToken refreshToken = refreshTokenService
+             .verifyRefreshToken(request.getRefreshToken());
+
+     User user = refreshToken.getUser();
+
+     UserDetails userDetails =
+             org.springframework.security.core.userdetails.User
+                     .withUsername(user.getUsername())
+                     .password(user.getPassword())
+                     .authorities(user.getRole().name())
+                     .build();
+
+     String accessToken = jwtService.generateToken(userDetails);
+
+     return new RefreshTokenResponse(accessToken);
  }
 }

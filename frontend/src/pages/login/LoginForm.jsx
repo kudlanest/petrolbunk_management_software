@@ -22,7 +22,13 @@ import {
 
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import api from "../../services/api";
+
+import {loginUser} from "../../services/auth/authService";
+
+import {SUCCESS_MESSAGES,ERROR_MESSAGES,INFO_MESSAGES} from "../../constants/message";
+
+
+
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -32,6 +38,8 @@ export default function LoginForm() {
     password: "",
     remember: false,
   });
+
+  
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -99,26 +107,47 @@ export default function LoginForm() {
     try {
       setLoading(true);
 
-      const response = await api.post("/auth/login", {
+
+      const response = await loginUser({
         username: form.username,
         password: form.password,
       });
 
       const data = response.data;
+      console.log("Login Response:", data);
 
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data));
 
-      showSnackbar("Login Successful", "success");
 
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 1000);
+
+// localStorage.setItem("accessToken", data.accessToken);
+// localStorage.setItem("refreshToken", data.refreshToken);
+// localStorage.setItem("user", JSON.stringify(data));
+
+// console.log("Access Token:", data.accessToken);
+// console.log("Refresh Token:", data.refreshToken);
+
+// console.log(response.data);
+
+      // showSnackbar(response.data, "success");
+
+// Store username temporarily for OTP verification
+// localStorage.setItem("loginUsername", form.username);
+
+        setTimeout(() => {
+            navigate("/otp-verification", {
+    state: {
+        from: "login",
+        email: response.data.email,
+        
+
+    }
+});
+          }, 1200);
 
     } catch (error) {
       const message =
         error.response?.data?.message ||
-        "Invalid username or password";
+        ERROR_MESSAGES.LOGIN_FAILED;
 
       showSnackbar(message, "error");
     } finally {
@@ -251,15 +280,16 @@ export default function LoginForm() {
           }
         />
 
-        <Typography
-          sx={{
-            color: "#38BDF8",
-            cursor: "pointer",
-            fontSize: 14,
-          }}
-        >
-          Forgot Password?
-        </Typography>
+<Typography
+  sx={{
+    color: "#38BDF8",
+    cursor: "pointer",
+    fontSize: 14,
+  }}
+  onClick={() => navigate("/forgot-password")}
+>
+  Forgot Password?
+</Typography>
       </Box>
 
       {/* Login Button */}
@@ -327,7 +357,7 @@ export default function LoginForm() {
         color="#64748B"
         fontSize={13}
       >
-        © 2026 Petrol Bunk Management System
+        {INFO_MESSAGES.COPYRIGHT}
       </Typography>
 
       {/* Snackbar */}
